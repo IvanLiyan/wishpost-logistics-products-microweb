@@ -1,0 +1,8 @@
+/node_modules/
+.DS_Store
+/.idea
+.history
+dist/
+.awcache
+.dist
+package-lock.json
