@@ -71,6 +71,7 @@ module.exports = {
     },
   },
   devServer: {
+    disableHostCheck: true,
     port: PORT,
     index: 'index.html',
     compress: true,
