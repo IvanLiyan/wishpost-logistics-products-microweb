@@ -14,4 +14,13 @@ export default [
         '@views/demo/index'
       ),
   },
+  {
+    path: `${APP_NAME}/advisor-tool`,
+    name: `${APP_NAME}.advisor-tool`,
+    component: () =>
+      import(
+        /* webpackChunkName: "advisor-tool" */
+        '@views/advisor-tool/index'
+      ),
+  },
 ];
