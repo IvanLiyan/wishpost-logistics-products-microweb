@@ -7,28 +7,16 @@
         <v-card>
           <v-container fluid>
             <v-form ref="form" v-model="valid">
-              <br />
-              <v-row class="search-row">
-                <v-col cols="3">
-                  <v-autocomplete
-                    v-model="selected_country"
-                    :items="countries"
-                    :label="i18n('目的国')"
-                    item-text="text"
-                    item-value="val"
-                    append-icon="mdi-map-marker"
-                    clearable
-                    outlined
-                    dense
-                  ></v-autocomplete>
-                </v-col>
-                <v-col cols="3">
-                  <wt-select v-model="selected_sensitivity_type" :placeholder="i18n('商品属性')">
-                    <wt-option v-for="item in sensitivityTypes" :key="item.text" :value="item.val" :label="item.text" />
-                  </wt-select>
-                </v-col>
-                <v-col cols="3">
+              <div class="search-row">
+                <wt-select class="mr" v-model="selected_country" :placeholder="i18n('目的国')">
+                  <wt-option v-for="item in countries" :key="item.text" :value="item.val" :label="item.text" />
+                </wt-select>
+                <wt-select class="mr" v-model="selected_sensitivity_type" :placeholder="i18n('商品属性')">
+                  <wt-option v-for="item in sensitivityTypes" :key="item.text" :value="item.val" :label="item.text" />
+                </wt-select>
+                <span class="text-filed-wrapper">
                   <v-text-field
+                    class="mr"
                     v-model="value"
                     :label="i18n('商品价值')"
                     :prefix="currency"
@@ -38,8 +26,8 @@
                     outlined
                     dense
                   ></v-text-field>
-                </v-col>
-                <v-col cols="3">
+                </span>
+                <span class="text-filed-wrapper">
                   <v-text-field
                     v-model="weight"
                     :label="i18n('商品重量')"
@@ -52,107 +40,57 @@
                     hint="最多支持３位小数，如3.435"
                     dense
                   ></v-text-field>
-                </v-col>
-              </v-row>
-              <v-row class="search-row">
-                <v-col cols="1" style="margin-right: 1%">
-                  <wt-button
-                    class="search-btn"
-                    type="primary"
-                    :loading="searching"
-                    :disabled="isDisabled"
-                    @click="searchWospService"
-                  >
-                    {{ i18n('Search') }}
-                  </wt-button>
-                </v-col>
-                <v-col cols="1">
-                  <wt-button class="clear-btn" type="secondary" @click="clearSearchFilter">
-                    {{ i18n('Clear') }}
-                  </wt-button>
-                </v-col>
-              </v-row>
+                </span>
+              </div>
+              <div>
+                <wt-button
+                  class="search-btn"
+                  type="primary"
+                  :loading="searching"
+                  :disabled="isDisabled"
+                  @click="searchWospService"
+                  style="margin-right: 20px"
+                >
+                  {{ i18n('Search') }}
+                </wt-button>
+                <wt-button class="clear-btn" type="secondary" @click="clearSearchFilter">
+                  {{ i18n('Clear') }}
+                </wt-button>
+              </div>
             </v-form>
           </v-container>
         </v-card>
         <br />
         <v-card>
           <v-card-title>
-            <v-row class="search-row">
-              <v-col cols="2">
-                <!-- <v-autocomplete
-                  v-model="selected_carriers"
-                  :items="carriers"
-                  :label="i18n('物流商')"
-                  item-text="text"
-                  item-value="val"
-                  :disabled="disableFilter"
-                  multiple
-                  chips
-                  small-chips
-                  outlined
-                  dense
-                ></v-autocomplete> -->
+            <div class="search-row">
+              <div class="search-left">
                 <wt-select
                   v-model="selected_carriers"
                   :placeholder="i18n('物流商')"
                   :label="i18n('物流商')"
-                  :disabled="disableFilter"
                   multiple
+                  :disabled="disableFilter"
+                  class="mr"
                 >
                   <wt-option v-for="item in carriers" :key="item.text" :value="item.val" :label="item.text" />
                 </wt-select>
-              </v-col>
-              <v-col cols="2">
-                <!-- <v-select
-                  v-model="selected_register"
-                  :items="register_policy"
-                  :label="i18n('妥投政策')"
-                  item-text="text"
-                  item-value="val"
-                  :disabled="disableFilter"
-                  outlined
-                  dense
-                ></v-select> -->
-                <wt-select v-model="selected_register" :label="i18n('妥投政策')" :disabled="disableFilter">
+                <wt-select class="mr" :disabled="disableFilter" v-model="selected_register" :label="i18n('妥投政策')">
                   <wt-option v-for="item in register_policy" :key="item.text" :value="item.val" :label="item.text" />
                 </wt-select>
-              </v-col>
-              <v-col cols="2">
-                <!-- <v-select
-                  v-model="selected_limit"
-                  :items="limit_policy"
-                  :label="i18n('限量政策')"
-                  item-text="text"
-                  item-value="val"
-                  :disabled="disableFilter"
-                  outlined
-                  dense
-                ></v-select> -->
-                <wt-select v-model="selected_limit" :label="i18n('限量政策')" :disabled="disableFilter">
+                <wt-select class="mr" :disabled="disableFilter" v-model="selected_limit" :label="i18n('限量政策')">
                   <wt-option v-for="item in limit_policy" :key="item.text" :value="item.val" :label="item.text" />
                 </wt-select>
-              </v-col>
-              <v-col cols="2">
-                <!-- <v-text-field
-                  v-model="search_keyword"
-                  :label="i18n('Search')"
-                  append-icon="search"
-                  outlined
-                  dense
-                  hide-details
-                ></v-text-field> -->
-                <wt-input v-model="search_keyword" :label="i18n('Search')" :placeholder="i18n('Search')">
+                <wt-input class="mr" v-model="search_keyword" :label="i18n('Search')" :placeholder="i18n('Search')">
                   <wt-icon name="search" slot="suffix" />
                 </wt-input>
-              </v-col>
-              <v-spacer></v-spacer>
-              <v-col cols="1" style="margin-right: 6px">
+              </div>
+              <div class="search-right">
                 <v-btn
                   v-track-event="{
                     category: 'advisor_tool',
                     action: 'ttd_sort',
-                    opt_value: user.id,
+                    opt_value: user && user.id,
                   }"
                   :class="delivery_ttd_sort ? 'blue--text' : 'grey--text'"
                   rounded
@@ -163,13 +101,11 @@
                 >
                   {{ i18n('时效快优先') }}
                 </v-btn>
-              </v-col>
-              <v-col cols="1" style="margin-right: 20px">
                 <v-btn
                   v-track-event="{
                     category: 'advisor_tool',
                     action: 'refund_rate_sort',
-                    opt_value: user.id,
+                    opt_value: user && user.id,
                   }"
                   :class="refund_rate_sort ? 'blue--text' : 'grey--text'"
                   rounded
@@ -180,13 +116,11 @@
                 >
                   {{ i18n('低退款率优先') }}
                 </v-btn>
-              </v-col>
-              <v-col cols="1">
                 <v-btn
                   v-track-event="{
                     category: 'advisor_tool',
                     action: 'price_sort',
-                    opt_value: user.id,
+                    opt_value: user && user.id,
                   }"
                   :class="fee_sort ? 'blue--text' : 'grey--text'"
                   rounded
@@ -197,8 +131,8 @@
                 >
                   {{ i18n('低价优先') }}
                 </v-btn>
-              </v-col>
-            </v-row>
+              </div>
+            </div>
           </v-card-title>
           <v-data-table
             :headers="headers"
@@ -346,9 +280,9 @@ export default {
       ],
       carriers: [],
       register_policy: [
-        { text: '默认', val: null },
-        { text: '妥投', val: true },
-        { text: '非妥投', val: false },
+        { text: this.i18n('默认'), val: null },
+        { text: this.i18n('妥投'), val: true },
+        { text: this.i18n('非妥投'), val: false },
       ],
       limit_policy: [
         { text: this.i18n('默认'), val: null },
@@ -407,15 +341,30 @@ export default {
       let result = this.channels;
       if (this.selected_register != null) {
         result = result.filter(el => el.is_registered === this.selected_register);
-        this.$ba.trackEvent('advisor_tool', 'register_selector', this.selected_register.toString(), this.user.id);
+        this.$ba.trackEvent(
+          'advisor_tool',
+          'register_selector',
+          this.selected_register.toString(),
+          this.user && this.user.id,
+        );
       }
       if (this.selected_limit != null) {
         result = result.filter(el => el.is_limited === this.selected_limit);
-        this.$ba.trackEvent('advisor_tool', 'limit_selector', this.selected_limit.toString(), this.user.id);
+        this.$ba.trackEvent(
+          'advisor_tool',
+          'limit_selector',
+          this.selected_limit.toString(),
+          this.user && this.user.id,
+        );
       }
       if (this.selected_carriers.length != 0) {
         result = result.filter(el => this.selected_carriers.includes(el.carrier_code));
-        this.$ba.trackEvent('advisor_tool', 'carrier_selector', this.selected_carriers.join(', '), this.user.id);
+        this.$ba.trackEvent(
+          'advisor_tool',
+          'carrier_selector',
+          this.selected_carriers.join(', '),
+          this.user && this.user.id,
+        );
       }
       return result;
     },
@@ -467,7 +416,7 @@ export default {
       this.searching = true;
       this.channels = [];
       this.params = this.getParams();
-      this.$ba.trackEvent('advisor_tool', 'search_criteria', JSON.stringify(this.params), this.user.id);
+      this.$ba.trackEvent('advisor_tool', 'search_criteria', JSON.stringify(this.params), this.user && this.user.id);
       this.params['api_name'] = 'advisor-tool/wosp-service/search';
       if (this.user.is_admin) this.submit(this.params);
       else {
@@ -562,23 +511,42 @@ export default {
 </script>
 <style scoped lang="scss">
 .search-row {
-  .wt-btn-primary {
-    color: #fff;
+  display: flex;
+  flex-wrap: wrap;
+  .search-left {
+    display: flex;
+    flex-wrap: wrap;
   }
-  .wt-btn-secondary {
-    color: #305bef;
+  .search-right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    padding-top: 10px;
   }
-  .wt-btn-disabled {
-    color: #bfcdd4;
+  .mr {
+    margin-right: 20px;
+  }
+  .text-filed-wrapper {
+    width: 240px;
   }
 }
 ::v-deep .wt-select {
+  width: 240px;
   .wt-input-box {
     .wt-input-wrapper {
       border-radius: 4px;
       border-color: rgba(0, 0, 0, 0.38);
     }
   }
+}
+.wt-btn-primary {
+  color: #fff;
+}
+.wt-btn-secondary {
+  color: #305bef;
+}
+.wt-btn-disabled {
+  color: #bfcdd4;
 }
 ::v-deep .wt-select-tags {
   .wt-select-tags-ul {
@@ -588,12 +556,20 @@ export default {
 }
 ::v-deep .wt-input-box {
   .wt-input-wrapper {
+    min-width: 180px;
     border-radius: 4px;
     border-color: rgba(0, 0, 0, 0.38);
     &.wt-input-with-label {
       .wt-input-con {
         margin-top: -10px;
       }
+    }
+  }
+}
+::v-deep .v-input {
+  .v-input__control {
+    .v-input_slot {
+      min-height: 36px !important;
     }
   }
 }
