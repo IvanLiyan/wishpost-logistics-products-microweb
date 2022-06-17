@@ -87,11 +87,6 @@
               </div>
               <div class="search-right">
                 <v-btn
-                  v-track-event="{
-                    category: 'advisor_tool',
-                    action: 'ttd_sort',
-                    opt_value: user && user.id,
-                  }"
                   :class="delivery_ttd_sort ? 'blue--text' : 'grey--text'"
                   rounded
                   small
@@ -102,11 +97,6 @@
                   {{ i18n('时效快优先') }}
                 </v-btn>
                 <v-btn
-                  v-track-event="{
-                    category: 'advisor_tool',
-                    action: 'refund_rate_sort',
-                    opt_value: user && user.id,
-                  }"
                   :class="refund_rate_sort ? 'blue--text' : 'grey--text'"
                   rounded
                   small
@@ -117,11 +107,6 @@
                   {{ i18n('低退款率优先') }}
                 </v-btn>
                 <v-btn
-                  v-track-event="{
-                    category: 'advisor_tool',
-                    action: 'price_sort',
-                    opt_value: user && user.id,
-                  }"
                   :class="fee_sort ? 'blue--text' : 'grey--text'"
                   rounded
                   small
@@ -341,30 +326,36 @@ export default {
       let result = this.channels;
       if (this.selected_register != null) {
         result = result.filter(el => el.is_registered === this.selected_register);
-        this.$ba.trackEvent(
+        // eslint-disable-next-line
+        _hmt.push([
+          '_trackEvent',
           'advisor_tool',
           'register_selector',
           this.selected_register.toString(),
           this.user && this.user.id,
-        );
+        ]);
       }
       if (this.selected_limit != null) {
         result = result.filter(el => el.is_limited === this.selected_limit);
-        this.$ba.trackEvent(
+        // eslint-disable-next-line
+        _hmt.push([
+          '_trackEvent',
           'advisor_tool',
           'limit_selector',
           this.selected_limit.toString(),
           this.user && this.user.id,
-        );
+        ]);
       }
       if (this.selected_carriers.length != 0) {
         result = result.filter(el => this.selected_carriers.includes(el.carrier_code));
-        this.$ba.trackEvent(
+        // eslint-disable-next-line
+        _hmt.push([
+          '_trackEvent',
           'advisor_tool',
           'carrier_selector',
           this.selected_carriers.join(', '),
           this.user && this.user.id,
-        );
+        ]);
       }
       return result;
     },
@@ -416,10 +407,18 @@ export default {
       this.searching = true;
       this.channels = [];
       this.params = this.getParams();
-      this.$ba.trackEvent('advisor_tool', 'search_criteria', JSON.stringify(this.params), this.user && this.user.id);
+      // eslint-disable-next-line
+      _hmt.push([
+        '_trackEvent',
+        'advisor_tool',
+        'search_criteria',
+        JSON.stringify(this.params),
+        this.user && this.user.id,
+      ]);
       this.params['api_name'] = 'advisor-tool/wosp-service/search';
-      if (this.user.is_admin) this.submit(this.params);
-      else {
+      if (this.user && this.user.is_admin) {
+        this.submit(this.params);
+      } else {
         this.$refs.captcha.captcha_dialog = true;
         this.$refs.captcha.captcha_value = '';
         const version = new Date().toString();
@@ -428,7 +427,6 @@ export default {
     },
     async submit(params) {
       try {
-        console.log(333, URL.getCarriersAndCountries);
         const { data } = await req(URL.searchWospService, params);
         this.searching = false;
         this.$refs.captcha.captcha_dialog = false;
@@ -483,6 +481,8 @@ export default {
         if (!b.ttd_50pct_in_90 || !b.ttd_90pct_in_90) return -1;
         return a.ttd_50pct_in_90 + a.ttd_90pct_in_90 - (b.ttd_50pct_in_90 + b.ttd_90pct_in_90);
       });
+      // eslint-disable-next-line
+      _hmt.push(['_trackEvent', 'advisor_tool', 'ttd_sort', 'opt_value', this.user && this.user.id]);
     },
     refundRateSort() {
       this.delivery_ttd_sort = false;
@@ -493,6 +493,8 @@ export default {
         if (!b.refund_rate_in_90_rank) return -1;
         return a.refund_rate_in_90_rank - b.refund_rate_in_90_rank;
       });
+      // eslint-disable-next-line
+      _hmt.push(['_trackEvent', 'advisor_tool', 'refund_rate_sort', 'opt_value', this.user && this.user.id]);
     },
     feeSort() {
       this.refund_rate_sort = false;
@@ -505,6 +507,8 @@ export default {
         if (b_fee == 'N/A') return -1;
         return parseInt(a_fee.substr(0, a_fee.length - 4)) - parseInt(b_fee.substr(0, b_fee.length - 4));
       });
+      // eslint-disable-next-line
+      _hmt.push(['_trackEvent', 'advisor_tool', 'price_sort', 'opt_value', this.user && this.user.id]);
     },
   },
 };

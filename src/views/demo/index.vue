@@ -1,30 +1,6 @@
 <template>
   <div>
-    <wt-card title="Demo page title" subtitle="demo page subtitle">Demo page content1111</wt-card>
-    <wt-select v-model="value" style="margin-right: 50px" label="国家1">
-      <wt-option
-        v-for="item in options1"
-        :key="item.value"
-        :label="item.label"
-        :value="item.value"
-        :disabled="item.disabled"
-      />
-    </wt-select>
-    <wt-select multiple v-model="value2" style="margin-right: 50px" label="国家2">
-      <wt-option
-        v-for="item in options2"
-        :key="item.value"
-        :label="item.label"
-        :value="item.value"
-        :disabled="item.disabled"
-      />
-    </wt-select>
-    <wt-breadcrumb>
-      <wt-breadcrumb-item tag="router-link" to="/">Home page</wt-breadcrumb-item>
-      <wt-breadcrumb-item tag="router-link" to="/">First item</wt-breadcrumb-item>
-      <wt-breadcrumb-item tag="router-link" to="/">Second item</wt-breadcrumb-item>
-      <wt-breadcrumb-item>Third item</wt-breadcrumb-item>
-    </wt-breadcrumb>
+    <wt-card title="Demo page title" subtitle="demo page subtitle">Demo page content</wt-card>
   </div>
 </template>
 <script>

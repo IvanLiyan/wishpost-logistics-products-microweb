@@ -19,6 +19,13 @@ export default () => {
     actions: {},
   });
   store.registerModule(process.env.VUE_APP_NAME, moduleStore);
+  var _hmt = _hmt || [];
+  (function () {
+    var hm = document.createElement('script');
+    hm.src = 'https://hm.baidu.com/hm.js?bdd61a1650d2e8bfdaf8f412a07a51c9';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(hm, s);
+  })();
   const themes = {
     // Text colors
     white: '#FFFFFF',
