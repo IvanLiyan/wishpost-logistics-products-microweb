@@ -12,15 +12,15 @@
         </v-row>
         <v-row class="operation-panel">
           <v-col cols="6">
-            <v-btn color="primary" class="mb-2 ml-4" @click="openModifyDialog({}, false)">
+            <wt-button class="mb-2 ml-4 form-btn-normal" @click="openModifyDialog({}, false)">
               {{ i18n('Create') }}
-            </v-btn>
-            <v-btn color="primary" class="mb-2" @click="showBatchAddModal()">
+            </wt-button>
+            <wt-button color="#FFF" class="mb-2 form-btn-normal" @click="showBatchAddModal()">
               {{ i18n('Batch Add') }}
-            </v-btn>
-            <v-btn color="secondary" class="mb-2" @click="showDeleteDialog(true)">
+            </wt-button>
+            <wt-button color="#FFF" class="mb-2 form-btn-delete" @click="showDeleteDialog(true)">
               {{ i18n('Batch Delete') }}
-            </v-btn>
+            </wt-button>
           </v-col>
           <v-col cols="2">
             <v-menu
@@ -45,9 +45,9 @@
             </v-menu>
           </v-col>
           <v-col cols="2">
-            <v-btn color="primary" class="mb-2" @click="getList">
+            <wt-button class="mb-2 form-btn-normal" @click="getList">
               {{ i18n('查询该日') }}
-            </v-btn>
+            </wt-button>
           </v-col>
           <v-col cols="2" class="search-field">
             <v-text-field
@@ -293,6 +293,8 @@
 </template>
 <script>
 import uploadFileView from '@component/uploadFileView';
+import req from '@utils/request';
+import URL from './url';
 export default {
   name: 'manageOrderTrafficControl',
   components: { uploadFileView },
@@ -384,28 +386,27 @@ export default {
       }
       return color + '--text';
     },
-    getList() {
+    async getList() {
+      this.loading = true;
       const params = {
         search_date: this.search_date,
       };
-      this.loading = true;
-      this.api.getOrderTrafficControlList(params).then(
-        res => {
-          this.rows = res.data.results.rows;
-          this.loading = false;
-        },
-        err => {
-          this.loading = false;
-          this.noty({
-            type: 'error',
-            text: err.msg,
-          });
-        },
-      );
+      try {
+        const { data } = await req(URL.getOrderTrafficControlList, params);
+        this.rows = data.results.rows;
+        this.loading = false;
+      } catch (err) {
+        this.loading = false;
+        this.$wt.notify({
+          type: 'error',
+          message: err.msg,
+        });
+      }
     },
-    getMeta() {
-      this.api.getOrderTrafficControlMeta().then(res => {
-        const resp = res.data.results;
+    async getMeta() {
+      try {
+        const { data } = await req(URL.getOrderTrafficControlMeta);
+        const resp = data.results;
         const default_opt = [
           {
             id: 'None',
@@ -419,7 +420,12 @@ export default {
         self.max_allowed_warning = resp['max_allowed_warning'];
         self.min_valid_rate = resp['min_valid_rate'];
         self.min_valid_limit = resp['min_valid_limit'];
-      });
+      } catch (err) {
+        this.$wt.notify({
+          type: 'error',
+          message: err.msg,
+        });
+      }
     },
     _resetPhab() {
       this.phab.id = null;
@@ -604,6 +610,23 @@ export default {
 };
 </script>
 <style scoped>
+.form-btn-normal {
+  color: #fff;
+  font-weight: 700;
+  border-radius: 4px;
+  margin-right: 4px;
+}
+.form-btn-delete {
+  color: #fff;
+  font-weight: 700;
+  border-radius: 4px;
+  margin-right: 4px;
+  background: #e52533;
+  border: #e52533;
+}
+.form-btn-delete:hover {
+  background: #c00;
+}
 .error-message {
   color: #ff5252;
   float: right;
