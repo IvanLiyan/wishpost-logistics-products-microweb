@@ -41,10 +41,14 @@ export default {
   methods: {
     submitCaptcha: async function () {
       this.submitLoading = true;
-      const params = this.$parent.params;
-      params['captcha'] = this.captcha_value;
-      await this.$parent.submit(params);
-      this.submitLoading = false;
+      try {
+        const params = this.$parent.params;
+        params['captcha'] = this.captcha_value;
+        await this.$parent.submit(params);
+        this.submitLoading = false;
+      } catch (error) {
+        console.log(error);
+      }
     },
     getNewCaptcha: function () {
       const version = new Date().toString();
@@ -53,3 +57,11 @@ export default {
   },
 };
 </script>
+<style lang="scss" scoped>
+.wt-btn-primary {
+  color: #fff;
+}
+.wt-btn-secondary {
+  color: #305bef;
+}
+</style>

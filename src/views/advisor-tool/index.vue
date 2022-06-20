@@ -8,7 +8,7 @@
           <v-container fluid>
             <v-form ref="form" v-model="valid">
               <div class="search-row">
-                <wt-select class="mr" v-model="selected_country" :placeholder="i18n('目的国')">
+                <wt-select class="mr" :filterable="true" v-model="selected_country" :placeholder="i18n('目的国')">
                   <wt-option v-for="item in countries" :key="item.text" :value="item.val" :label="item.text" />
                 </wt-select>
                 <wt-select class="mr" v-model="selected_sensitivity_type" :placeholder="i18n('商品属性')">
@@ -72,6 +72,7 @@
                   multiple
                   :disabled="disableFilter"
                   class="mr"
+                  :filterable="true"
                 >
                   <wt-option v-for="item in carriers" :key="item.text" :value="item.val" :label="item.text" />
                 </wt-select>
@@ -222,30 +223,6 @@ export default {
   components: { captcha },
   data() {
     return {
-      options: [
-        {
-          value: 'China',
-          label: 'China',
-        },
-        {
-          value: 'America',
-          label: 'America',
-        },
-        {
-          value: 'Japan',
-          label: 'Japan',
-          disabled: true,
-        },
-        {
-          value: 'France',
-          label: 'France',
-        },
-        {
-          value: 'Russia',
-          label: 'Russia',
-        },
-      ],
-      value1: '',
       valid: true,
       params: {},
       searching: false,
@@ -387,7 +364,7 @@ export default {
       } catch (err) {
         this.$wt.notify({
           type: 'error',
-          text: err.msg,
+          message: err.msg,
         });
       }
     },
@@ -460,10 +437,9 @@ export default {
         });
       } catch (err) {
         this.searching = false;
-        console.log(1122333, err);
         this.$wt.notify({
           type: 'error',
-          text: err.msg,
+          message: this.i18n(err.message),
         });
       }
     },
@@ -541,6 +517,10 @@ export default {
       border-radius: 4px;
       border-color: rgba(0, 0, 0, 0.38);
     }
+  }
+  .wt-select-search-field {
+    font-size: 14px;
+    font-weight: 400;
   }
 }
 .wt-btn-primary {
