@@ -1,15 +1,10 @@
 <template>
   <v-container>
     <div class="col-12">
-      <v-card class="section">
-        <v-row>
-          <v-col>
-            <v-card-title>
-              {{ i18n('Order Volume Control Management') }}
-              <v-spacer></v-spacer>
-            </v-card-title>
-          </v-col>
-        </v-row>
+      <wt-card class="section">
+        <span slot="title">
+          {{ i18n('Order Volume Control Management') }}
+        </span>
         <v-row class="operation-panel">
           <v-col cols="6">
             <wt-button class="mb-2 ml-4 form-btn-normal" @click="openModifyDialog({}, false)">
@@ -23,7 +18,7 @@
             </wt-button>
           </v-col>
           <v-col cols="2">
-            <v-menu
+            <!-- <v-menu
               v-model="show_search_tpicker"
               :close-on-content-click="false"
               :nudge-right="40"
@@ -42,7 +37,8 @@
                 ></v-text-field>
               </template>
               <v-date-picker v-model="search_date" @input="show_search_tpicker = false"></v-date-picker>
-            </v-menu>
+            </v-menu> -->
+            <wt-date-picker type="date" width="50%" v-model="search_date" @input="show_search_tpicker = false" />
           </v-col>
           <v-col cols="2">
             <wt-button class="mb-2 form-btn-normal" @click="getList">
@@ -68,6 +64,17 @@
             </div>
           </v-col>
         </v-row>
+        <!-- <wt-table :data="rows">
+          <wt-table-column type="selection" />
+          <wt-table-column prop="wosp_name" label="WOSP Service" width="160" />
+          <wt-table-column prop="shipping_product_name" label="Shipping Product" width="140" />
+          <wt-table-column prop="country_name" label="Country" width="140" />
+          <wt-table-column prop="warehouse_name" label="Warehouse" width="140" />
+          <wt-table-column prop="max_cnt" label="Max Count" width="90" />
+          <wt-table-column prop="current_cnt" label="Current Count" width="70" />
+          <wt-table-column prop="last_updated_time" label="Last Updated Time" width="170" />
+          <wt-table-column prop="control" label="Actions" width="100" />
+        </wt-table> -->
         <v-data-table
           v-model="selected_rows"
           :headers="headers"
@@ -144,7 +151,7 @@
             </v-tooltip>
           </template>
         </v-data-table>
-      </v-card>
+      </wt-card>
     </div>
     <!-- Batch Add Dialog -->
     <v-dialog v-model="batch_add_dialog.show" max-width="700px">
@@ -394,6 +401,7 @@ export default {
       try {
         const { data } = await req(URL.getOrderTrafficControlList, params);
         this.rows = data.results.rows;
+        console.log('this.rows', this.rows);
         this.loading = false;
       } catch (err) {
         this.loading = false;
@@ -614,13 +622,13 @@ export default {
   color: #fff;
   font-weight: 700;
   border-radius: 4px;
-  margin-right: 4px;
+  margin-right: 12px;
 }
 .form-btn-delete {
   color: #fff;
   font-weight: 700;
   border-radius: 4px;
-  margin-right: 4px;
+  margin-right: 12px;
   background: #e52533;
   border: #e52533;
 }
@@ -638,5 +646,8 @@ export default {
 }
 .operation-panel {
   margin-right: 20px;
+}
+em {
+  color: #000 !important;
 }
 </style>
