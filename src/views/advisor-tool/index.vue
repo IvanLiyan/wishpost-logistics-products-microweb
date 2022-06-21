@@ -5,7 +5,7 @@
         <captcha ref="captcha"></captcha>
         <div class="h2 mb-4">{{ i18n('物流咨询工具') }}</div>
         <v-card>
-          <v-container fluid>
+          <v-container fluid style="padding: 16px">
             <v-form ref="form" v-model="valid">
               <div class="search-row">
                 <wt-select class="mr" :filterable="true" v-model="selected_country" :placeholder="i18n('目的国')">
@@ -14,7 +14,7 @@
                 <wt-select class="mr" v-model="selected_sensitivity_type" :placeholder="i18n('商品属性')">
                   <wt-option v-for="item in sensitivityTypes" :key="item.text" :value="item.val" :label="item.text" />
                 </wt-select>
-                <span class="text-filed-wrapper">
+                <span class="text-filed-wrapper" style="width: 260px">
                   <v-text-field
                     class="mr"
                     v-model="value"
@@ -89,6 +89,7 @@
               <div class="search-right">
                 <v-btn
                   :class="delivery_ttd_sort ? 'blue--text' : 'grey--text'"
+                  class="mr"
                   rounded
                   small
                   :color="delivery_ttd_sort ? '#ECF8FD' : '#F9F9F9'"
@@ -99,6 +100,7 @@
                 </v-btn>
                 <v-btn
                   :class="refund_rate_sort ? 'blue--text' : 'grey--text'"
+                  class="mr"
                   rounded
                   small
                   :color="refund_rate_sort ? '#ECF8FD' : '#F9F9F9'"
@@ -109,6 +111,7 @@
                 </v-btn>
                 <v-btn
                   :class="fee_sort ? 'blue--text' : 'grey--text'"
+                  class="mr"
                   rounded
                   small
                   :color="fee_sort ? '#ECF8FD' : '#F9F9F9'"
@@ -500,7 +503,7 @@ export default {
   .search-right {
     flex: 1;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     padding-top: 10px;
   }
   .mr {
@@ -539,8 +542,9 @@ export default {
   }
 }
 ::v-deep .wt-input-box {
+  margin-bottom: 30px;
   .wt-input-wrapper {
-    min-width: 180px;
+    min-width: 240px;
     border-radius: 4px;
     border-color: rgba(0, 0, 0, 0.38);
     &.wt-input-with-label {
