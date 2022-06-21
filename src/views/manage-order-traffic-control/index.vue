@@ -421,10 +421,10 @@ export default {
         self.min_valid_rate = resp['min_valid_rate'];
         self.min_valid_limit = resp['min_valid_limit'];
       } catch (err) {
-        this.$wt.notify({
-          type: 'error',
-          message: err.msg,
-        });
+        // this.$wt.notify({
+        //   type: 'error',
+        //   message: err.msg,
+        // });
       }
     },
     _resetPhab() {
