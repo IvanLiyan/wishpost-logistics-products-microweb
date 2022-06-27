@@ -23,4 +23,13 @@ export default [
         '@views/advisor-tool/index'
       ),
   },
+  {
+    path: `${APP_NAME}/manage-order-traffic-control`,
+    name: `${APP_NAME}.manage-order-traffic-control`,
+    component: () =>
+      import(
+        /* webpackChunkName: "advisor-tool" */
+        '@views/manage-order-traffic-control/index'
+      ),
+  },
 ];
