@@ -17,7 +17,7 @@
               {{ i18n('Batch Delete') }}
             </wt-button>
           </v-col>
-          <v-col cols="2">
+          <v-col cols="4">
             <!-- <v-menu
               v-model="show_search_tpicker"
               :close-on-content-click="false"
@@ -38,12 +38,7 @@
               </template>
               <v-date-picker v-model="search_date" @input="show_search_tpicker = false"></v-date-picker>
             </v-menu> -->
-            <wt-date-picker type="date" width="50%" v-model="search_date" @input="show_search_tpicker = false" />
-          </v-col>
-          <v-col cols="2">
-            <wt-button class="mb-2 form-btn-normal" @click="getList">
-              {{ i18n('查询该日') }}
-            </wt-button>
+            <wt-date-picker type="date" :width="120" v-model="search_date" @input="getList" />
           </v-col>
           <v-col cols="2" class="search-field">
             <v-text-field
@@ -75,6 +70,12 @@
           <wt-table-column prop="last_updated_time" label="Last Updated Time" width="170" />
           <wt-table-column prop="control" label="Actions" width="100" />
         </wt-table> -->
+        <!-- <wt-pagination
+          :total="300"
+          :show-total="false"
+          :current-page.sync="currentPage"
+          :page-size.sync="item_per_page"
+        /> -->
         <v-data-table
           v-model="selected_rows"
           :headers="headers"
