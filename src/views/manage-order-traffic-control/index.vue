@@ -408,7 +408,7 @@ export default {
         this.loading = false;
         this.$wt.notify({
           type: 'error',
-          message: err.msg,
+          message: err.message,
         });
       }
     },
@@ -432,7 +432,7 @@ export default {
       } catch (err) {
         // this.$wt.notify({
         //   type: 'error',
-        //   message: err.msg,
+        //   message: err.message,
         // });
       }
     },
@@ -450,40 +450,66 @@ export default {
     cancelModifyDialog() {
       this.modify_dialog.show = false;
     },
-    saveModifyDialog() {
+    async saveModifyDialog() {
       this.modify_dialog.loading = true;
       this.modify_dialog.msg = '';
       if (!this._validatePhab()) {
         this.modify_dialog.msg = this.i18n('请填写所有信息');
       }
       const { country, wosp_id, shipping_product_id, max_cnt, warehouse } = this.modify_dialog;
-      this.api
-        .saveOrderTrafficControl({
-          country,
-          wosp_id,
-          shipping_product_id,
-          max_cnt,
-          warehouse,
-          phab_id: this.phab.id,
-          phab_desc: this.phab.desc,
-        })
-        .then(
-          () => {
-            this.noty({
-              type: 'success',
-              text: this.i18n('成功！请到物流工具包->管理物流事件中审批激活！'),
-            });
-            this.modify_dialog.loading = false;
-            this.modify_dialog.show = false;
-          },
-          err => {
-            this.noty({
-              type: 'error',
-              text: err.msg,
-            });
-            this.modify_dialog.loading = false;
-          },
-        );
+      const params = {
+        country,
+        wosp_id,
+        shipping_product_id,
+        max_cnt,
+        warehouse,
+        phab_id: this.phab.id,
+        phab_desc: this.phab.desc,
+      };
+      try {
+        const { data } = await req(URL.saveOrderTrafficControl, params);
+        console.log(data);
+        this.$wt.notify({
+          type: 'success',
+          message: this.i18n('成功！请到物流工具包->管理物流事件中审批激活！'),
+        });
+        this.modify_dialog.loading = false;
+        this.modify_dialog.show = false;
+      } catch (err) {
+        console.log('err', err);
+        this.$wt.notify({
+          type: 'error',
+          message: err.message,
+        });
+        this.modify_dialog.loading = false;
+      }
+      // this.api
+      //   .saveOrderTrafficControl({
+      //     country,
+      //     wosp_id,
+      //     shipping_product_id,
+      //     max_cnt,
+      //     warehouse,
+      //     phab_id: this.phab.id,
+      //     phab_desc: this.phab.desc,
+      //   })
+      //   .then(
+      //     () => {
+      //       this.noty({
+      //         type: 'success',
+      //         text: this.i18n('成功！请到物流工具包->管理物流事件中审批激活！'),
+      //       });
+      //       this.modify_dialog.loading = false;
+      //       this.modify_dialog.show = false;
+      //     },
+      //     err => {
+      //       this.noty({
+      //         type: 'error',
+      //         text: err.message,
+      //       });
+      //       this.modify_dialog.loading = false;
+      //     },
+      //   );
     },
     openModifyDialog(item, is_edit) {
       if (is_edit) {
@@ -519,7 +545,7 @@ export default {
     cancelBatchAddModal() {
       this.batch_add_dialog.show = false;
     },
-    batchAdd() {
+    async batchAdd() {
       this.batch_add_dialog.msg = '';
       const url = this.getUploadFileUrl();
       if (!url) {
@@ -531,36 +557,57 @@ export default {
         return;
       }
       this.batch_add_dialog.loading = true;
-      this.api
-        .batchAddTrafficControl({
-          file_url: url,
-          phab_id: this.phab.id,
-          phab_desc: this.phab.desc,
-        })
-        .then(
-          () => {
-            this.noty({
-              type: 'success',
-              text: this.i18n('成功！请到物流工具包->管理物流事件中审批激活！'),
-            });
-            this.batch_add_dialog.show = false;
-            this.batch_add_dialog.loading = false;
-          },
-          err => {
-            this.noty({
-              type: 'error',
-              text: err.msg,
-            });
-            this.batch_add_dialog.loading = false;
-          },
-        );
+      const params = {
+        file_url: url,
+        phab_id: this.phab.id,
+        phab_desc: this.phab.desc,
+      };
+      try {
+        const { data } = await req(URL.batchAddTrafficControl, params);
+        console.log(data);
+        this.$wt.notify({
+          type: 'success',
+          message: this.i18n('成功！请到物流工具包->管理物流事件中审批激活！'),
+        });
+        this.batch_add_dialog.show = false;
+        this.batch_add_dialog.loading = false;
+      } catch (err) {
+        this.$wt.notify({
+          type: 'error',
+          message: err.message,
+        });
+        this.batch_add_dialog.loading = false;
+      }
+      // this.api
+      //   .batchAddTrafficControl({
+      //     file_url: url,
+      //     phab_id: this.phab.id,
+      //     phab_desc: this.phab.desc,
+      //   })
+      //   .then(
+      //     () => {
+      //       this.noty({
+      //         type: 'success',
+      //         text: this.i18n('成功！请到物流工具包->管理物流事件中审批激活！'),
+      //       });
+      //       this.batch_add_dialog.show = false;
+      //       this.batch_add_dialog.loading = false;
+      //     },
+      //     err => {
+      //       this.noty({
+      //         type: 'error',
+      //         text: err.message,
+      //       });
+      //       this.batch_add_dialog.loading = false;
+      //     },
+      //   );
     },
     getUploadFileUrl() {
       const file = this.batch_add_dialog.batch_add_file;
       if (!file) {
-        this.noty({
+        this.$wt.notify({
           type: 'error',
-          text: this.i18n('Please choose a file.'),
+          message: this.i18n('Please choose a file.'),
         });
         return;
       }
@@ -589,31 +636,50 @@ export default {
       }
       this.deleteItem();
     },
-    deleteItem() {
+    async deleteItem() {
       const category_strings = this.delete_dialog.is_batch
         ? this.selected_rows.map(entry => entry.category_string)
         : [this.delete_dialog.item.category_string];
-      this.api
-        .batchDeleteOrderTrafficControl({
-          'category_strings[]': category_strings,
-          phab_id: this.phab.id,
-          phab_desc: this.phab.desc,
-        })
-        .then(
-          () => {
-            this.delete_dialog.show = false;
-            this.noty({
-              type: 'success',
-              text: this.i18n('成功！请到物流工具包->管理物流事件中审批激活！'),
-            });
-          },
-          err => {
-            this.noty({
-              type: 'error',
-              text: err.msg,
-            });
-          },
-        );
+      const params = {
+        'category_strings[]': category_strings,
+        phab_id: this.phab.id,
+        phab_desc: this.phab.desc,
+      };
+      try {
+        const { data } = await req(URL.batchDeleteOrderTrafficControl, params);
+        console.log(data);
+        this.delete_dialog.show = false;
+        this.$wt.notify({
+          type: 'success',
+          message: this.i18n('成功！请到物流工具包->管理物流事件中审批激活！'),
+        });
+      } catch (err) {
+        this.$wt.notify({
+          type: 'error',
+          message: err.message,
+        });
+      }
+      // this.api
+      //   .batchDeleteOrderTrafficControl({
+      //     'category_strings[]': category_strings,
+      //     phab_id: this.phab.id,
+      //     phab_desc: this.phab.desc,
+      //   })
+      //   .then(
+      //     () => {
+      //       this.delete_dialog.show = false;
+      //       this.noty({
+      //         type: 'success',
+      //         text: this.i18n('成功！请到物流工具包->管理物流事件中审批激活！'),
+      //       });
+      //     },
+      //     err => {
+      //       this.noty({
+      //         type: 'error',
+      //         text: err.message,
+      //       });
+      //     },
+      //   );
     },
   },
 };
