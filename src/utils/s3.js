@@ -1,4 +1,4 @@
-import api from './api';
+// import api from './api';
 export default {
   createCORSRequest: function () {
     var xhr;
@@ -7,16 +7,16 @@ export default {
     }
     return xhr;
   },
-  logUploadErrorsToServer: function (response, status, state, description) {
-    var log_data = {
-      response: response !== null && typeof response === 'object' ? JSON.stringify(response) : response,
-      status: status,
-      state: state,
-      description: description,
-      url: window.location.href,
-    };
-    api.logFileUploadError('log-file-upload-error', { log_data: JSON.stringify(log_data) }, null);
-  },
+  // logUploadErrorsToServer: function (response, status, state, description) {
+  //   var log_data = {
+  //     response: response !== null && typeof response === 'object' ? JSON.stringify(response) : response,
+  //     status: status,
+  //     state: state,
+  //     description: description,
+  //     url: window.location.href,
+  //   };
+  //   // api.logFileUploadError('log-file-upload-error', { log_data: JSON.stringify(log_data) }, null);
+  // },
   checkFileType: function (file) {
     var allowedDocTypes = [
       'application/pdf',
@@ -109,61 +109,62 @@ export default {
       // cors not supported, upload using the server
       this.fallbackServerUpload(form, success, failure, type);
     } else {
+      console.log('');
       // var verifyURL;
       // if (type === 'image') {
       //   verifyURL = 'url/image';
       // } else {
       //   verifyURL = 'url/file';
       // }
-      api.generateSignedUploadURL({ type: file.type, ext: ext, name: file.name }).then(
-        resp => {
-          xhr.addEventListener(
-            'load',
-            function () {
-              if (xhr.readyState != 4) {
-                return;
-              }
-              var _ref = xhr.status;
-              if (!(200 <= _ref && _ref < 300)) {
-                this.fallbackServerUpload(form, success, failure, type);
-                this.logUploadErrorsToServer(xhr.response, xhr.status, 'load', 'uploadToS3');
-              } else {
-                resp = { code: 0, data: { url: resp.data.fetch_url, filename: resp.data.filename } };
-                success(resp);
-              }
-            },
-            false,
-          );
-          xhr.addEventListener(
-            'error',
-            function () {
-              this.fallbackServerUpload(form, success, failure, type);
-              this.logUploadErrorsToServer(xhr.response, xhr.status, 'error', 'uploadToS3');
-            },
-            false,
-          );
-          xhr.addEventListener(
-            'abort',
-            function () {
-              failure(resp, xhr);
-              this.logUploadErrorsToServer(xhr.response, xhr.status, 'abort', 'uploadToS3');
-            },
-            false,
-          );
-          xhr.open('PUT', resp.data.url, true);
-          xhr.setRequestHeader('Content-Type', file.type);
-          xhr.setRequestHeader('x-amz-acl', 'public-read');
-          xhr.timeout = 120000; // Set timeout to 120 seconds
-          xhr.ontimeout = function () {
-            this.fallbackServerUpload(form, success, failure, type);
-            this.logUploadErrorsToServer(xhr.response, xhr.status, 'timeout', 'uploadToS3');
-          };
-          xhr.send(file);
-        },
-        err => {
-          failure(err);
-        },
-      );
+      // api.generateSignedUploadURL({ type: file.type, ext: ext, name: file.name }).then(
+      //   resp => {
+      //     xhr.addEventListener(
+      //       'load',
+      //       function () {
+      //         if (xhr.readyState != 4) {
+      //           return;
+      //         }
+      //         var _ref = xhr.status;
+      //         if (!(200 <= _ref && _ref < 300)) {
+      //           this.fallbackServerUpload(form, success, failure, type);
+      //           this.logUploadErrorsToServer(xhr.response, xhr.status, 'load', 'uploadToS3');
+      //         } else {
+      //           resp = { code: 0, data: { url: resp.data.fetch_url, filename: resp.data.filename } };
+      //           success(resp);
+      //         }
+      //       },
+      //       false,
+      //     );
+      //     xhr.addEventListener(
+      //       'error',
+      //       function () {
+      //         this.fallbackServerUpload(form, success, failure, type);
+      //         this.logUploadErrorsToServer(xhr.response, xhr.status, 'error', 'uploadToS3');
+      //       },
+      //       false,
+      //     );
+      //     xhr.addEventListener(
+      //       'abort',
+      //       function () {
+      //         failure(resp, xhr);
+      //         this.logUploadErrorsToServer(xhr.response, xhr.status, 'abort', 'uploadToS3');
+      //       },
+      //       false,
+      //     );
+      //     xhr.open('PUT', resp.data.url, true);
+      //     xhr.setRequestHeader('Content-Type', file.type);
+      //     xhr.setRequestHeader('x-amz-acl', 'public-read');
+      //     xhr.timeout = 120000; // Set timeout to 120 seconds
+      //     xhr.ontimeout = function () {
+      //       this.fallbackServerUpload(form, success, failure, type);
+      //       this.logUploadErrorsToServer(xhr.response, xhr.status, 'timeout', 'uploadToS3');
+      //     };
+      //     xhr.send(file);
+      //   },
+      //   err => {
+      //     failure(err);
+      //   },
+      // );
     }
   },
 };
