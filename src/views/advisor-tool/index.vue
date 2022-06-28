@@ -140,6 +140,14 @@
               itemsPerPageOptions: [20, 40, 60],
             }"
           >
+            <template v-slot:item.exception_message="{ item }">
+              <v-tooltip top>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-icon v-if="item.exception_message" dense v-bind="attrs" v-on="on" small>mdi-help-circle</v-icon>
+                </template>
+                <span>{{ item.exception_message }}</span>
+              </v-tooltip>
+            </template>
             <template v-slot:item.local_name="{ item }">
               <v-col>
                 <v-row style="margin-top: 1px">
@@ -267,6 +275,7 @@ export default {
       headers: [
         { text: this.i18n('渠道名称'), value: 'local_name' },
         { text: this.i18n('估算费用'), value: 'fee' },
+        { text: '', value: 'exception_message' },
         { text: this.i18n('API下单代码'), value: 'api_code' },
         { text: this.i18n('已妥投订单平均时效'), value: 'delivery_ttd' },
         { text: this.i18n('妥投率'), value: 'delivered_in_15_rate' },
@@ -423,6 +432,7 @@ export default {
             ttd_50pct_in_90: el.ttd_50pct_in_90,
             ttd_90pct_in_90: el.ttd_90pct_in_90,
             fee: el.fee,
+            exception_message: el.exception_message,
             delivery_ttd:
               el.ttd_50pct_in_90 && el.ttd_90pct_in_90
                 ? parseInt(el.ttd_50pct_in_90) + '~' + parseInt(el.ttd_90pct_in_90) + '天'
