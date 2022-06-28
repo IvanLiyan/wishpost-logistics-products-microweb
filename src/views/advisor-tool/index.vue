@@ -280,7 +280,6 @@ export default {
       headers: [
         { text: this.i18n('渠道名称'), value: 'local_name' },
         { text: this.i18n('估算费用'), value: 'fee' },
-        // { text: '', value: 'exception_message' },
         { text: this.i18n('API下单代码'), value: 'api_code' },
         { text: this.i18n('已妥投订单平均时效'), value: 'delivery_ttd' },
         { text: this.i18n('妥投率'), value: 'delivered_in_15_rate' },
