@@ -230,7 +230,7 @@ export default {
   },
   mounted: function () {
     // eslint-disable-next-line
-    this.$refs['file-upload'].onInput = _.bind(function (e) {
+    this.$refs['file-upload'].onInput = e => {
       if (e.target) {
         let files_local = [...(e.target.files || [])];
         if (!this.multi) {
@@ -246,7 +246,7 @@ export default {
       }
       this.$refs['file-upload'].internalValue = this.files;
       this.$refs['file-upload'].initialValue = this.$refs['file-upload'].internalValue;
-    }, this);
+    };
   },
   methods: {
     deleteOne: function (index) {
@@ -293,7 +293,7 @@ export default {
     uploadFile: function (drag, filename, overrideFile) {
       this.filesReady = false;
       // eslint-disable-next-line
-      var success = _.bind(function (resp, xhr) {
+      var success = (resp, xhr) => {
         this.atomic_counter = this.atomic_counter - 1;
         var original_resp = resp;
         if (typeof resp === 'string') {
@@ -322,9 +322,9 @@ export default {
         if (this.success) {
           this.success(f);
         }
-      }, this);
+      };
       // eslint-disable-next-line
-      var failure = _.bind(function (resp, xhr) {
+      var failure = (resp, xhr) => {
         // do some heavy logging
         // get all input values
         this.atomic_counter = this.atomic_counter - 1;
@@ -343,7 +343,7 @@ export default {
         if (resp != undefined) {
           this.failure(resp, xhr);
         }
-      }, this);
+      };
       if (!filename) {
         var resp = { msg: this.i18n('Please choose a file.') };
         failure(resp, undefined);

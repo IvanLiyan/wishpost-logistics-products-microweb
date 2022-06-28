@@ -12,6 +12,8 @@
     "@mdi/js": "^4.5.95",
     "@wish/fe-utils": "^0.0.1-beta.5",
     "@wish/wt-vue": "^0.0.2-alpha.35",
+    "axios": "^0.27.2",
+    "jquery": "^3.6.0",
     "material-design-icons-iconfont": "^4.0.5",
     "vue": "2.6.13",
     "vue-i18n": "^8.3.2",
