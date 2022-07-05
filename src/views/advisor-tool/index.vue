@@ -149,7 +149,7 @@
                       <v-icon v-if="!item.success" dense v-bind="attrs" v-on="on" small>mdi-help-circle</v-icon>
                     </wt-tooltip>
                   </template> -->
-                  <wt-tooltip :content="item.message" placement="top">
+                  <wt-tooltip :content="item.message + 'test bug'" placement="top">
                     <v-icon v-if="!item.success" dense small>mdi-help-circle</v-icon>
                   </wt-tooltip>
                 </v-row>
