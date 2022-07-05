@@ -143,7 +143,7 @@
             <template v-slot:item.fee="{ item }">
               <v-col>
                 <v-row style="margin-top: 1px">
-                  <h3>{{ item.fee }}</h3>
+                  <span>{{ item.fee }}</span>
                   <v-tooltip top>
                     <template v-slot:activator="{ on, attrs }">
                       <v-icon v-if="!item.success" dense v-bind="attrs" v-on="on" small>mdi-help-circle</v-icon>
