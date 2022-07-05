@@ -146,9 +146,10 @@
                   <span>{{ item.fee }}</span>
                   <v-tooltip top>
                     <template v-slot:activator="{ on, attrs }">
-                      <v-icon v-if="!item.success" dense v-bind="attrs" v-on="on" small>mdi-help-circle</v-icon>
+                      <wt-tooltip :content="item.message" placement="top">
+                        <v-icon v-if="!item.success" dense v-bind="attrs" v-on="on" small>mdi-help-circle</v-icon>
+                      </wt-tooltip>
                     </template>
-                    <span>{{ item.message }}</span>
                   </v-tooltip>
                 </v-row>
               </v-col>
