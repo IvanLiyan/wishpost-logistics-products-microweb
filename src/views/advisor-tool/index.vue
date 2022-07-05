@@ -150,7 +150,7 @@
                     </wt-tooltip>
                   </template> -->
                   <wt-tooltip :content="item.message" placement="top">
-                    <v-icon v-if="!item.success" dense small>mdi-help-circle</v-icon>
+                    <v-icon v-if="!item.success" dense small style="vertical-align: -10%">mdi-help-circle</v-icon>
                   </wt-tooltip>
                 </v-row>
               </v-col>
