@@ -151,7 +151,6 @@
                   </template> -->
                   <wt-tooltip :content="item.message" placement="top">
                     <v-icon v-if="!item.success" dense small>mdi-help-circle</v-icon>
-                    <span slot="content">{{ item.message }}</span>
                   </wt-tooltip>
                 </v-row>
               </v-col>
