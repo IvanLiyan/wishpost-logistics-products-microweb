@@ -144,13 +144,14 @@
               <v-col>
                 <v-row style="margin-top: 1px">
                   <span>{{ item.fee }}</span>
-                  <v-tooltip top>
-                    <template v-slot:activator="{ on, attrs }">
-                      <wt-tooltip :content="item.message" placement="top">
-                        <v-icon v-if="!item.success" dense v-bind="attrs" v-on="on" small>mdi-help-circle</v-icon>
-                      </wt-tooltip>
-                    </template>
-                  </v-tooltip>
+                  <!-- <template v-slot:activator="{ on, attrs }">
+                    <wt-tooltip :content="item.message" placement="top">
+                      <v-icon v-if="!item.success" dense v-bind="attrs" v-on="on" small>mdi-help-circle</v-icon>
+                    </wt-tooltip>
+                  </template> -->
+                  <wt-tooltip :content="item.message" placement="top">
+                    <v-icon v-if="!item.success" dense small>mdi-help-circle</v-icon>
+                  </wt-tooltip>
                 </v-row>
               </v-col>
             </template>
