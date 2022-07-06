@@ -5,7 +5,7 @@
         <captcha ref="captcha"></captcha>
         <div class="h2 mb-4">{{ i18n('物流咨询工具') }}</div>
         <wt-tooltip content="物流咨询工具" placement="top">
-          <v-icon v-if="!item.success" dense small>mdi-help-circle</v-icon>
+          <v-icon dense small>mdi-help-circle</v-icon>
         </wt-tooltip>
         <v-card>
           <v-container fluid style="padding: 16px">
