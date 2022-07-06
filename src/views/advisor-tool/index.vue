@@ -357,11 +357,6 @@ export default {
   },
   mounted() {
     this.init();
-    const self = this;
-    setTimeout(() => {
-      self.content = '物流咨询工具';
-      self.show = true;
-    }, 5000);
   },
   methods: {
     async init() {
