@@ -4,9 +4,6 @@
       <v-container>
         <captcha ref="captcha"></captcha>
         <div class="h2 mb-4">{{ i18n('物流咨询工具') }}</div>
-        <wt-tooltip content="物流咨询工具" placement="top">
-          <v-icon dense small>mdi-help-circle</v-icon>
-        </wt-tooltip>
         <v-card>
           <v-container fluid style="padding: 16px">
             <v-form ref="form" v-model="valid">
@@ -152,8 +149,8 @@
                       <v-icon v-if="!item.success" dense v-bind="attrs" v-on="on" small>mdi-help-circle</v-icon>
                     </wt-tooltip>
                   </template> -->
-                  <wt-tooltip :content="item.message" placement="top">
-                    <v-icon v-if="!item.success" dense small style="vertical-align: -10%">mdi-help-circle</v-icon>
+                  <wt-tooltip v-if="!item.success" :content="item.message" placement="top">
+                    <v-icon dense small style="vertical-align: -10%">mdi-help-circle</v-icon>
                   </wt-tooltip>
                 </v-row>
               </v-col>
@@ -360,6 +357,11 @@ export default {
   },
   mounted() {
     this.init();
+    const self = this;
+    setTimeout(() => {
+      self.content = '物流咨询工具';
+      self.show = true;
+    }, 5000);
   },
   methods: {
     async init() {
