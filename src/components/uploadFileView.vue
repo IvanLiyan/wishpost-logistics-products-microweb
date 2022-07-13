@@ -148,7 +148,7 @@ export default {
         } else if (resp && 'msg' in resp) {
           message = resp.msg;
         }
-        this.noty({
+        this.$wt.notify({
           type: 'error',
           text: message,
         });
