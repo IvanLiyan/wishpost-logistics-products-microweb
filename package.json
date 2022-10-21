@@ -3,8 +3,8 @@
   "parentName": "logistics",
   "version": "0.1.0",
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build --report",
+    "dev": "vue-cli-service serve --mode dev",
+    "build": "vue-cli-service build --report --mode prod",
     "lint": "eslint --ext .vue,.js src --fix"
   },
   "dependencies": {
