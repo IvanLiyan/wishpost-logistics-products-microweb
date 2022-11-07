@@ -17,7 +17,7 @@
                       <wt-select
                         width="100%"
                         :disabled="disableFilter"
-                        v-model="selected_id_type.id_type_code"
+                        v-model="selected_id_type"
                         :label="i18n('选择查询单号-可选')"
                         :placeholder="i18n('可选')"
                       >
@@ -33,7 +33,7 @@
                         type="textarea"
                         :label="i18n('填写单号')"
                         placeholder="回车分隔，最多200个"
-                        :disabled="selected_id_type.id_type_code == null"
+                        :disabled="selected_id_type == 0 || selected_id_type == null"
                         v-model="bag_id_numbers"
                       />
                     </wt-col>
@@ -42,28 +42,28 @@
                         <wt-select
                           class="mr"
                           :disabled="disableFilter"
-                          v-model="selected_bag_type.bag_type_code"
+                          v-model="selected_bag_type"
                           :label="i18n('大包种类-必选')"
                           @change="initParamsByBagtype"
                         >
                           <wt-option
                             v-for="item in bag_types"
-                            :key="item.bag_type_code"
+                            :key="item.bag_type_name"
                             :value="item.bag_type_code"
                             :label="item.bag_type_name"
                           />
                         </wt-select>
                         <wt-select
                           class="mr"
-                          v-model="selected_upstream.code"
+                          v-model="selected_upstream"
                           :label="i18n('选择打包方-可选')"
                           :placeholder="i18n('可选')"
                         >
-                          <wt-option v-for="item in upstreams" :key="item.code" :value="item.code" :label="item.name" />
+                          <wt-option v-for="item in upstreams" :key="item.name" :value="item.code" :label="item.name" />
                         </wt-select>
                         <wt-select
                           class="mr"
-                          v-model="selected_downstream.code"
+                          v-model="selected_downstream"
                           :label="i18n('选择揽收方-可选')"
                           :placeholder="i18n('可选')"
                         >
@@ -76,7 +76,7 @@
                         </wt-select>
                         <wt-select
                           class="mr"
-                          v-model="selected_bag_state.state_code"
+                          v-model="selected_bag_state"
                           :label="i18n('大包状态-可选')"
                           :placeholder="i18n('可选')"
                         >
@@ -343,15 +343,15 @@ export default {
     return {
       tab: null,
       tab_name: 'bag',
-      selected_bag_type: { bag_type_name: '', bag_type_code: null },
-      selected_bag_state: { state_name: '', state_code: null },
+      selected_bag_type: null,
+      selected_bag_state: null,
       selected_filter_time: { time_type_name: '', time_type_code: null },
-      selected_id_type: { id_type_name: '', id_type_code: null },
+      selected_id_type: null,
       selected_bag: { item_count: 0, wish_standard_tracking_ids: [] },
       selected_delivery_note_state: { state_name: '', state_code: null },
       selected_delivery_note: { order_count: 0, bag_count: 0, bag_numbers: [] },
-      selected_upstream: { name: '', code: null },
-      selected_downstream: { name: '', code: null },
+      selected_upstream: null,
+      selected_downstream: null,
       start_date: new Date().toISOString().substr(0, 10),
       end_date: new Date().toISOString().substr(0, 10),
       bag_id_numbers: null,
@@ -364,6 +364,7 @@ export default {
       bag_states: [{ state_code: null, state_name: this.i18n('默认') }],
       time_types: [{ time_type_name: this.i18n('大包创建时间'), time_type_code: 1 }],
       id_types: [
+        { id_type_code: 0, id_type_name: this.i18n('默认不选') },
         { id_type_code: 1, id_type_name: this.i18n('wishpost订单号') },
         { id_type_code: 2, id_type_name: this.i18n('物流单号') },
         { id_type_code: 3, id_type_name: this.i18n('大包号') },
@@ -411,23 +412,23 @@ export default {
   },
   computed: {
     wish_standard_tracking_ids: function () {
-      if (this.selected_id_type.id_type_code == 1) return this.bag_id_numbers.split('\n');
+      if (this.selected_id_type == 1 && this.bag_id_numbers) return this.bag_id_numbers.split('\n');
       return [];
     },
     tracking_ids: function () {
-      if (this.selected_id_type.id_type_code == 2) return this.bag_id_numbers.split('\n');
+      if (this.selected_id_type == 2 && this.bag_id_numbers) return this.bag_id_numbers.split('\n');
       return [];
     },
     bag_numbers: function () {
-      if (this.selected_id_type.id_type_code == 3) return this.bag_id_numbers.split('\n');
+      if (this.selected_id_type == 3 && this.bag_id_numbers) return this.bag_id_numbers.split('\n');
       return [];
     },
     delivery_note_numbers: function () {
-      if (this.selected_id_type.id_type_code == 4) return this.bag_id_numbers.split('\n');
+      if (this.selected_id_type == 4 && this.bag_id_numbers) return this.bag_id_numbers.split('\n');
       return [];
     },
     ref_bag_numbers: function () {
-      if (this.selected_id_type.id_type_code == 5) return this.bag_id_numbers.split('\n');
+      if (this.selected_id_type == 5 && this.bag_id_numbers) return this.bag_id_numbers.split('\n');
       return [];
     },
   },
@@ -437,22 +438,6 @@ export default {
   },
   methods: {
     async initParams() {
-      // this.api.getPackingBagSearchParams().then(
-      //   res => {
-      //     const resp_data = res.data;
-      //     this.bag_types = resp_data['bag_types'];
-      //     this.bag_states = this.bag_states.concat(resp_data['bag_states']);
-      //     this.delivery_note_states = this.delivery_note_states.concat(resp_data['delivery_note_states']);
-      //     this.setDefaultParams();
-      //     this.initParamsByBagtype();
-      //   },
-      //   err => {
-      //     this.$wt.notify({
-      //       type: 'error',
-      //       message: err.msg,
-      //     });
-      //   },
-      // );
       try {
         const { data: resp_data } = await req(URL.getPackingBagSearchParams, {});
         this.bag_types = resp_data['bag_types'];
@@ -470,27 +455,13 @@ export default {
     initLogisticsParams: function () {
       this.upstreams = [{ name: '默认全部', code: null }];
       this.downstreams = [{ name: '默认全部', code: null }];
-      this.selected_upstream = this.upstreams[0];
-      this.selected_downstream = this.downstreams[0];
+      this.selected_upstream = this.upstreams[0].code;
+      this.selected_downstream = this.downstreams[0].code;
       this.setDefaultLogisticsParams();
     },
     async initParamsByBagtype() {
       this.initLogisticsParams();
-      const params = { bag_type: this.selected_bag_type.bag_type_code };
-      // this.api.getBagTypeSearchParams(params).then(
-      //   res => {
-      //     const resp_data = res.data;
-      //     if (resp_data['upstreams']) this.upstreams = this.upstreams.concat(resp_data['upstreams']);
-      //     if (resp_data['downstreams']) this.downstreams = this.downstreams.concat(resp_data['downstreams']);
-      //     this.setDefaultLogisticsParams();
-      //   },
-      //   err => {
-      //     this.$wt.notify({
-      //       type: 'error',
-      //       message: err.msg,
-      //     });
-      //   },
-      // );
+      const params = { bag_type: this.selected_bag_type };
       try {
         const { data: resp_data } = await req(URL.getBagTypeSearchParams, params);
         if (resp_data['upstreams']) this.upstreams = this.upstreams.concat(resp_data['upstreams']);
@@ -504,11 +475,11 @@ export default {
       }
     },
     setDefaultParams: function () {
-      if (!this.selected_bag_type.bag_type_code) {
-        this.selected_bag_type = this.bag_types[0];
+      if (!this.selected_bag_type) {
+        this.selected_bag_type = this.bag_types[0].bag_type_code;
       }
-      if (!this.selected_bag_state.state_code) {
-        this.selected_bag_state = this.bag_states[0];
+      if (!this.selected_bag_state) {
+        this.selected_bag_state = this.bag_states[0].state_code;
       }
       if (!this.selected_delivery_note_state.state_code) {
         this.delivery_note_states = this.delivery_note_states[0];
@@ -518,23 +489,24 @@ export default {
       }
     },
     setDefaultLogisticsParams: function () {
-      if (!this.selected_upstream.code) {
-        this.selected_upstream = this.upstreams[0];
+      if (!this.selected_upstream) {
+        this.selected_upstream = this.upstreams[0].code;
       }
-      if (!this.selected_downstream.code) {
-        this.selected_downstream = this.downstreams[0];
+      if (!this.selected_downstream) {
+        this.selected_downstream = this.downstreams[0].code;
       }
     },
     clearSearchFilter: function () {
-      this.selected_bag_state = this.bag_states[0];
-      this.selected_id_type = this.id_types[0];
-      this.selected_upstream = this.upstreams[0];
-      this.selected_downstream = this.downstreams[0];
+      this.selected_bag_state = this.bag_states[0].state_code;
+      this.selected_id_type = null;
+      this.selected_upstream = this.upstreams[0].code;
+      this.selected_downstream = this.downstreams[0].code;
       this.start_date = new Date().toISOString().substr(0, 10);
       this.end_date = new Date().toISOString().substr(0, 10);
       this.bag_id_number = null;
       this.dn_bag_number = null;
       this.dn_number = null;
+      this.bag_id_numbers = null;
     },
     closeDialogs: function () {
       this.show_orders_detail_dialog = false;
@@ -550,10 +522,10 @@ export default {
     },
     getParams: function () {
       const params = {
-        bag_type: this.selected_bag_type.bag_type_code,
-        bag_state: this.selected_bag_state.state_code,
-        upstream: this.selected_upstream.code,
-        downstream: this.selected_downstream.code,
+        bag_type: this.selected_bag_type,
+        bag_state: this.selected_bag_state,
+        upstream: this.selected_upstream,
+        downstream: this.selected_downstream,
         start_ts: this.start_date + ' 00:00:00',
         end_ts: this.end_date + ' 23:59:59',
         wish_standard_tracking_ids: this.wish_standard_tracking_ids,
@@ -568,19 +540,6 @@ export default {
       this.searching = true;
       const params = this.getParams();
       this.selected_bags = [];
-      // this.api.getPackingBagSearch(params).then(
-      //   res => {
-      //     this.bags = res.data.results.rows;
-      //     this.searching = false;
-      //   },
-      //   err => {
-      //     this.searching = false;
-      //     this.$wt.notify({
-      //       type: 'error',
-      //       message: err.msg,
-      //     });
-      //   },
-      // );
       try {
         const { data } = await req(URL.getPackingBagSearch, params);
         this.bags = data.results.rows;
@@ -599,19 +558,6 @@ export default {
         bag_number: this.dn_bag_number,
         delivery_note_number: this.dn_number,
       };
-      // this.api.getDeliveryNoteSearch(params).then(
-      //   res => {
-      //     this.delivery_notes = res.data.results;
-      //     this.searching = false;
-      //   },
-      //   err => {
-      //     this.searching = false;
-      //     this.$wt.notify({
-      //       type: 'error',
-      //       message: err.msg,
-      //     });
-      //   },
-      // );
       try {
         const { data } = await req(URL.getDeliveryNoteSearch, params);
         this.delivery_notes = data.results;
@@ -637,17 +583,6 @@ export default {
       this.downloading = false;
     },
     async getTempAccessToken() {
-      // this.api.getTempAccessToken().then(
-      //   res => {
-      //     this.access_token = res.data.access_token;
-      //   },
-      //   err => {
-      //     this.$wt.notify({
-      //       type: 'error',
-      //       message: err.msg,
-      //     });
-      //   },
-      // );
       try {
         const { data } = await req(URL.getTempAccessToken);
         this.access_token = data.access_token;
