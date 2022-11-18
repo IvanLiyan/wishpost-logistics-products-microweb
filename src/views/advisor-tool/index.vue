@@ -11,6 +11,19 @@
                 <wt-select class="mr" :filterable="true" v-model="selected_country" :placeholder="i18n('目的国')">
                   <wt-option v-for="item in countries" :key="item.text" :value="item.val" :label="item.text" />
                 </wt-select>
+                <wt-select
+                  class="mr"
+                  :filterable="true"
+                  v-model="departure_country"
+                  :placeholder="i18n('Departure Country')"
+                >
+                  <wt-option
+                    v-for="item in enabled_departure_countries"
+                    :key="item.text"
+                    :value="item.val"
+                    :label="item.text"
+                  />
+                </wt-select>
                 <wt-select class="mr" v-model="selected_sensitivity_type" :placeholder="i18n('商品属性')">
                   <wt-option v-for="item in sensitivityTypes" :key="item.text" :value="item.val" :label="item.text" />
                 </wt-select>
@@ -252,6 +265,8 @@ export default {
       search_keyword: '',
       countries: [],
       eu_countries: [],
+      enabled_departure_countries: [{ text: this.i18n('All'), val: null }],
+      enabled_departure_countries_iso3: [],
       sensitivityTypes: [
         // {text: i18n("全选"), val: -1},
         { text: this.i18n('普货'), val: 0 },
@@ -272,6 +287,7 @@ export default {
       user: null,
       selected_sensitivity_type: null,
       selected_country: null,
+      departure_country: null,
       selected_carriers: [],
       selected_register: null,
       selected_limit: null,
@@ -361,11 +377,15 @@ export default {
   methods: {
     async init() {
       this.user = this.$store.state.user;
+      if (this.user.is_user && this.user.departure_country) {
+        this.departure_country = this.user.departure_country;
+      }
       try {
         const { data } = await req(URL.getCarriersAndCountries);
         const carriers = data.result.carrier,
           countries = data.result.country,
           eu_countries = data.result.eu_country;
+        this.enabled_departure_countries_iso3 = data.result.enabled_departure_countries;
         carriers.forEach(el => {
           this.carriers.push({
             text: el.carrier_name,
@@ -377,6 +397,12 @@ export default {
             text: `${el.country_name_cn} (${el.country_name_en})`,
             val: el.iso3,
           });
+          if (this.enabled_departure_countries_iso3.indexOf(el.iso3) > -1) {
+            this.enabled_departure_countries.push({
+              text: `${el.country_name_cn} (${el.country_name_en})`,
+              val: el.iso3,
+            });
+          }
         });
         this.eu_countries = eu_countries;
       } catch (err) {
@@ -390,6 +416,7 @@ export default {
       return {
         sensitivity_type: this.selected_sensitivity_type,
         country: this.selected_country,
+        departure_country: this.departure_country,
         weight: this.weight,
         value: this.value,
       };
