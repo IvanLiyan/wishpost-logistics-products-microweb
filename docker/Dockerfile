@@ -4,7 +4,7 @@ WORKDIR /tmp
 # ENV PATH /app/node_modules/.bin:$PATH
 COPY . ./
 RUN npm install
-RUN npm run build
+RUN npm run prod
 
 FROM nginx:1.19.4
 COPY --from=build /tmp/dist /home/nginx/static/dist
