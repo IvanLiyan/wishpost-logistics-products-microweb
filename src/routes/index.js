@@ -50,4 +50,13 @@ export default [
         '@views/handover/manage-bag-services/index'
       ),
   },
+  {
+    path: `${APP_NAME}/orders`,
+    name: `${APP_NAME}.orders`,
+    component: () =>
+      import(
+        /* webpackChunkName: "orders" */
+        '@views/orders/index'
+      ),
+  },
 ];

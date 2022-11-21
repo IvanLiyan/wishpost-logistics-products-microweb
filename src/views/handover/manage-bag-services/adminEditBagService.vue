@@ -79,11 +79,11 @@ export default {
       access_token: null,
       handover_members: [
         { code: 1, name: this.i18n('商户') },
-        { code: 2, name: this.i18n('物流商') },
+        { code: 2, name: this.i18n('物流服务商') },
         { code: 3, name: this.i18n('EPC仓库') },
         { code: 4, name: this.i18n('HUB仓库') },
         { code: 5, name: this.i18n('FBW仓库') },
-        { code: 6, name: this.i18n('分拣中心') },
+        { code: 6, name: this.i18n('分拣中心仓库') },
       ],
       handover_pushers: [
         { code: 1, name: this.i18n('上游') },
@@ -185,28 +185,24 @@ export default {
   min-width: 250px;
   .wt-input-box {
     width: 250px;
-    .wt-input-wrapper {
-      border-radius: 4px;
-      border-color: rgba(0, 0, 0, 0.38);
-    }
   }
   .wt-select-search-field {
     font-size: 14px;
     font-weight: 400;
   }
 }
-button,
-[type='button'],
-[type='reset'],
-[type='submit'],
-[role='button'] {
+.wt-btn-primary {
   color: #fff;
+  .wt-btn-before {
+    color: #fff;
+  }
 }
 .wt-btn-secondary {
   color: #305bef;
 }
 .wt-btn-disabled {
   color: #bfcdd4;
+  background: #305bef;
 }
 ::v-deep .wt-select-tags {
   .wt-select-tags-ul {
@@ -226,11 +222,9 @@ button,
   margin-bottom: 30px;
   .wt-input-wrapper {
     min-width: 250px;
-    border-radius: 4px;
-    border-color: rgba(0, 0, 0, 0.38);
     &.wt-input-with-label {
       .wt-input-con {
-        margin-top: -10px;
+        margin-top: -11px;
       }
     }
   }

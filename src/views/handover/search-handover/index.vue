@@ -106,13 +106,13 @@
                       </div>
                     </wt-col>
                   </wt-row>
-                  <wt-row :gutter="20" type="flex" style="max-width: 1040px">
+                  <wt-row :gutter="20" type="flex">
                     <wt-col span="12">
                       <wt-button
                         class="search-btn"
                         type="primary"
-                        :loading="searching"
-                        :disabled="searching"
+                        :loading="searchingBags"
+                        :disabled="searchingBags"
                         @click="getBags"
                         style="margin-right: 20px"
                       >
@@ -135,47 +135,54 @@
                 <p class="h3 font-weight-black search-p">
                   {{ i18n('查询结果') }}
                 </p>
-                <v-data-table
-                  :calculate-widths="true"
-                  :headers="bag_headers"
-                  :items="bags"
-                  :search="search_keyword"
-                  :loading-text="i18n('Loading... Please wait')"
-                  :footer-props="{
-                    prevIcon: 'keyboard_arrow_left',
-                    nextIcon: 'keyboard_arrow_right',
-                    itemsPerPageText: i18n('Rows per page'),
-                    itemsPerPageOptions: [20, 40],
-                  }"
-                  item-key="bag_number"
+                <wt-table
+                  :data="bagTableData"
+                  :emptyText="i18n('No data available')"
+                  :loading="searchingBags"
+                  :loadingMessage="i18n('Loading...')"
+                  :pagination="bags.length > 0 ? bagsPagination : false"
                 >
-                  <template v-slot:item.actual_weight="{ item }">
-                    <div v-if="item.actual_weight_modified == true" style="color: #ef8d2e">
-                      <span title="This value has been modified.">&#9888;</span>
-                      {{ item.actual_weight }}
-                    </div>
-                    <div v-else>
-                      {{ item.actual_weight }}
-                    </div>
-                  </template>
-                  <template v-slot:item.action="{ item }">
-                    <wt-button style="margin: 10px" @click="showOrdersDetail(item)">
-                      {{ i18n('订单详情') }}
-                    </wt-button>
-                    <wt-button
-                      type="secondary"
-                      style="margin: 10px"
-                      :href="
-                        '/api/v3/packing_bag/download_label?access_token=' +
-                        access_token +
-                        '&bag_numbers[]=' +
-                        item.bag_number
-                      "
-                    >
-                      {{ i18n('面单') }}
-                    </wt-button>
-                  </template>
-                </v-data-table>
+                  <wt-table-column prop="bag_number" :label="i18n('大包号')" />
+                  <wt-table-column prop="state_name" :label="i18n('大包状态')" />
+                  <wt-table-column prop="ref_bag_number" :label="i18n('ref大包号')" />
+                  <wt-table-column prop="handover_serial_number" :label="i18n('交接单号')" />
+                  <wt-table-column prop="declared_weight" :label="i18n('出库重量(KG)')" width="100" />
+                  <wt-table-column :label="i18n('入库重量(KG)')" width="100">
+                    <template slot-scope="scope">
+                      <div v-if="scope.row.actual_weight_modified == true" style="color: #ef8d2e">
+                        <span title="This value has been modified.">&#9888;</span>
+                        {{ scope.row.actual_weight }}
+                      </div>
+                      <div v-else>
+                        {{ scope.row.actual_weight }}
+                      </div>
+                    </template>
+                  </wt-table-column>
+                  <wt-table-column prop="upstream_name" :label="i18n('创建方')" />
+                  <wt-table-column prop="downstream_name" :label="i18n('揽收方')" />
+                  <wt-table-column prop="created_time" :label="i18n('创建时间')" />
+                  <wt-table-column prop="handover_time" :label="i18n('交接时间')" />
+                  <wt-table-column prop="handover_ack_time" :label="i18n('入库时间')" />
+                  <wt-table-column :label="i18n('操作')" width="140">
+                    <template slot-scope="scope">
+                      <wt-button style="margin: 10px" @click="showOrdersDetail(scope.row)">
+                        {{ i18n('订单详情') }}
+                      </wt-button>
+                      <wt-button
+                        type="secondary"
+                        style="margin: 10px"
+                        :href="
+                          '/api/v3/packing_bag/download_label?access_token=' +
+                          access_token +
+                          '&bag_numbers[]=' +
+                          scope.row.bag_number
+                        "
+                      >
+                        {{ i18n('面单') }}
+                      </wt-button>
+                    </template>
+                  </wt-table-column>
+                </wt-table>
                 <wt-dialog v-model="show_orders_detail_dialog" :title="i18n('大包订单信息')" :closable="true">
                   <div>
                     <v-list class="transparent">
@@ -216,17 +223,26 @@
             <v-tab-item :key="2" value="delivery_note">
               <v-container fluid>
                 <v-form class="padding-top-10">
-                  <wt-row :gutter="20" type="flex" style="max-width: 1070px">
+                  <wt-row :gutter="20" type="flex">
                     <wt-col span="8" style="display: flex; flex-direction: column; min-width: 250px">
                       <wt-input :label="i18n('wish大包号')" v-model="dn_bag_number" class="mr">
                         <wt-icon name="search" slot="suffix" />
                       </wt-input>
+                    </wt-col>
+                    <wt-col span="8" style="display: flex-end; flex-direction: column; min-width: 250px">
+                      <wt-input :label="i18n('wish交接单号')" v-model="dn_number" class="mr">
+                        <wt-icon name="search" slot="suffix" />
+                      </wt-input>
+                    </wt-col>
+                  </wt-row>
+                  <wt-row :gutter="20" type="flex">
+                    <wt-col span="12">
                       <div style="display: flex">
                         <wt-button
                           class="search-btn"
                           type="primary"
-                          :loading="searching"
-                          :disabled="searching"
+                          :loading="searchingDeliveryNotes"
+                          :disabled="searchingDeliveryNotes"
                           @click="getDeliveryNotes"
                           style="margin-right: 20px"
                         >
@@ -237,10 +253,7 @@
                         </wt-button>
                       </div>
                     </wt-col>
-                    <wt-col span="8" style="display: flex-end; flex-direction: column; min-width: 250px">
-                      <wt-input :label="i18n('wish交接单号')" v-model="dn_number" class="mr">
-                        <wt-icon name="search" slot="suffix" />
-                      </wt-input>
+                    <wt-col span="12" style="display: flex; justify-content: flex-end">
                       <div style="width: 100%; display: flex; justify-content: flex-end">
                         <wt-button
                           class="search-btn"
@@ -260,37 +273,42 @@
                 <p class="h3 font-weight-black search-p">
                   {{ i18n('查询结果') }}
                 </p>
-                <v-data-table
-                  :headers="delivery_note_headers"
-                  :items="delivery_notes"
-                  :search="search_keyword"
-                  :loading-text="i18n('Loading... Please wait')"
-                  :footer-props="{
-                    prevIcon: 'keyboard_arrow_left',
-                    nextIcon: 'keyboard_arrow_right',
-                    itemsPerPageText: i18n('Rows per page'),
-                    itemsPerPageOptions: [20, 40],
-                  }"
-                  item-key="delivery_note_number"
+                <wt-table
+                  :data="deliveryNoteData"
+                  :emptyText="i18n('No data available')"
+                  :loading="searchingDeliveryNotes"
+                  :loadingMessage="i18n('Loading...')"
+                  :pagination="delivery_notes.length > 0 ? deliveryNotePagination : false"
                 >
-                  <template v-slot:item.action="{ item }">
-                    <wt-button style="margin: 10px" @click="showBagsDetail(item)">
-                      {{ i18n('大包详情') }}
-                    </wt-button>
-                    <wt-button
-                      type="secondary"
-                      style="margin: 10px"
-                      :href="
-                        '/api/v3/delivery_note/download_label?access_token=' +
-                        access_token +
-                        '&delivery_note_numbers[]=' +
-                        item.delivery_note_number
-                      "
-                    >
-                      {{ i18n('下载面单') }}
-                    </wt-button>
-                  </template>
-                </v-data-table>
+                  <wt-table-column prop="delivery_note_number" :label="i18n('交接单号')" />
+                  <wt-table-column prop="state" :label="i18n('交接单状态')" />
+                  <wt-table-column prop="upstream_name" :label="i18n('创建方')" />
+                  <wt-table-column prop="downstream_name" :label="i18n('揽收方')" />
+                  <wt-table-column prop="bag_count" :label="i18n('包含大包')" />
+                  <wt-table-column prop="order_count" :label="i18n('包含订单')" />
+                  <wt-table-column prop="actual_bag_count" :label="i18n('实际大包数量')" />
+                  <wt-table-column prop="created_ts" :label="i18n('创建时间')" />
+                  <wt-table-column prop="handover_ts" :label="i18n('交接时间')" />
+                  <wt-table-column prop="action" :label="i18n('操作')" width="140">
+                    <template slot-scope="scope">
+                      <wt-button style="margin: 10px" @click="showBagsDetail(scope.row)">
+                        {{ i18n('大包详情') }}
+                      </wt-button>
+                      <wt-button
+                        type="secondary"
+                        style="margin: 10px"
+                        :href="
+                          '/api/v3/delivery_note/download_label?access_token=' +
+                          access_token +
+                          '&delivery_note_numbers[]=' +
+                          scope.row.delivery_note_number
+                        "
+                      >
+                        {{ i18n('下载面单') }}
+                      </wt-button>
+                    </template>
+                  </wt-table-column>
+                </wt-table>
                 <wt-dialog v-model="show_bags_detail_dialog" :title="i18n('大包信息')" :closable="true">
                   <div>
                     <v-list class="transparent">
@@ -376,26 +394,17 @@ export default {
       delivery_note_states: [{ state_code: null, state_name: '默认' }],
       weight: null,
       bags: [],
+      allBags: [],
       delivery_notes: [],
-      searching: false,
+      allDeliveryNotes: [],
+      searchingBags: false,
+      searchingDeliveryNotes: false,
       downloading: false,
       search_keyword: '',
       show_orders_detail_dialog: false,
       show_bags_detail_dialog: false,
-      bag_headers: [
-        { text: this.i18n('大包号'), value: 'bag_number' },
-        { text: this.i18n('大包状态'), value: 'state_name', width: '100' },
-        { text: this.i18n('ref大包号'), value: 'ref_bag_number' },
-        { text: this.i18n('交接单号'), value: 'handover_serial_number' },
-        { text: this.i18n('出库重量(KG)'), value: 'declared_weight' },
-        { text: this.i18n('入库重量(KG)'), value: 'actual_weight' },
-        { text: this.i18n('创建方'), value: 'upstream_name' },
-        { text: this.i18n('揽收方'), value: 'downstream_name', width: '150' },
-        { text: this.i18n('创建时间'), value: 'created_time', width: '170' },
-        { text: this.i18n('交接时间'), value: 'handover_time', width: '170' },
-        { text: this.i18n('入库时间'), value: 'handover_ack_time', width: '170' },
-        { text: this.i18n('操作'), value: 'action' },
-      ],
+      bagsCurrentPage: 1,
+      deliveryNoteCurrentPage: 1,
       delivery_note_headers: [
         { text: this.i18n('交接单号'), value: 'delivery_note_number' },
         { text: this.i18n('交接单状态'), value: 'state', width: '120' },
@@ -408,6 +417,20 @@ export default {
         { text: this.i18n('交接时间'), value: 'handover_ts', width: '170' },
         { text: this.i18n('操作'), value: 'action' },
       ],
+      deliveryNotePagination: {
+        total: 0,
+        showTotal: true,
+        showSizeChanger: true,
+        currentPage: this.deliveryNoteCurrentPage,
+        onChange: this.onDeliveryNotePageChange,
+      },
+      bagsPagination: {
+        total: 0,
+        showTotal: true,
+        showSizeChanger: true,
+        currentPage: this.bagsCurrentPage,
+        onChange: this.onBagsPageChange,
+      },
     };
   },
   computed: {
@@ -431,12 +454,76 @@ export default {
       if (this.selected_id_type == 5 && this.bag_id_numbers) return this.bag_id_numbers.split('\n');
       return [];
     },
+    bagTableData() {
+      if (this.bags.length > 0) {
+        const data = this.bags.map(item => ({
+          bag_number: item.bag_number,
+          state_name: item.state_name,
+          ref_bag_number: item.ref_bag_number,
+          handover_serial_number: item.handover_serial_number,
+          declared_weight: item.declared_weight,
+          upstream_name: item.upstream_name,
+          downstream_name: item.downstream_name,
+          created_time: item.created_time,
+          handover_time: item.handover_time,
+          handover_ack_time: item.handover_ack_time,
+          item_count: item.item_count,
+          logistics_order_codes: item.logistics_order_codes,
+        }));
+        return data;
+      } else {
+        return [];
+      }
+    },
+    deliveryNoteData() {
+      if (this.delivery_notes.length > 0) {
+        const data = this.delivery_notes.map(item => ({
+          delivery_note_number: item.delivery_note_number,
+          state: item.state,
+          upstream_name: item.upstream_name,
+          downstream_name: item.downstream_name,
+          bag_count: item.bag_count,
+          order_count: item.order_count,
+          actual_bag_count: item.actual_bag_count,
+          created_ts: item.created_ts,
+          handover_ts: item.handover_ts,
+          bag_numbers: item.bag_numbers,
+        }));
+        return data;
+      } else {
+        return [];
+      }
+    },
   },
   mounted: function () {
     this.initParams();
     this.getTempAccessToken();
   },
   methods: {
+    onBagsPageChange(current, size) {
+      if (this.allBags.length > 0) {
+        this.bagsPagination.total = this.allBags.length;
+        const offset = (current - 1) * size;
+        this.bags =
+          offset + size >= this.allBags.length
+            ? this.allBags.slice(offset, this.allBags.length)
+            : this.allBags.slice(offset, offset + size);
+      } else {
+        this.bags = this.allBags;
+      }
+    },
+    onDeliveryNotePageChange(current, size) {
+      if (this.allDeliveryNotes.length > 0) {
+        this.deliveryNotePagination.total = this.allDeliveryNotes.length;
+        const offset = (current - 1) * size;
+        this.delivery_notes =
+          offset + size >= this.allDeliveryNotes.length
+            ? this.allDeliveryNotes.slice(offset, this.allDeliveryNotes.length)
+            : this.allDeliveryNotes.slice(offset, offset + size);
+      } else {
+        this.delivery_notes = this.allDeliveryNotes;
+      }
+    },
     async initParams() {
       try {
         const { data: resp_data } = await req(URL.getPackingBagSearchParams, {});
@@ -537,15 +624,16 @@ export default {
       return params;
     },
     async getBags() {
-      this.searching = true;
+      this.searchingBags = true;
       const params = this.getParams();
       this.selected_bags = [];
       try {
         const { data } = await req(URL.getPackingBagSearch, params);
-        this.bags = data.results.rows;
-        this.searching = false;
+        this.allBags = data.results.rows;
+        this.onBagsPageChange(1, 10);
+        this.searchingBags = false;
       } catch (err) {
-        this.searching = false;
+        this.searchingBags = false;
         this.$wt.notify({
           type: 'error',
           message: err.msg,
@@ -553,17 +641,18 @@ export default {
       }
     },
     async getDeliveryNotes() {
-      this.searching = true;
+      this.searchingDeliveryNotes = true;
       const params = {
         bag_number: this.dn_bag_number,
         delivery_note_number: this.dn_number,
       };
       try {
         const { data } = await req(URL.getDeliveryNoteSearch, params);
-        this.delivery_notes = data.results;
-        this.searching = false;
+        this.allDeliveryNotes = data.results;
+        this.onDeliveryNotePageChange(1, 10);
+        this.searchingDeliveryNotes = false;
       } catch (err) {
-        this.searching = false;
+        this.searchingDeliveryNotes = false;
         this.$wt.notify({
           type: 'error',
           message: err.msg,
@@ -597,6 +686,9 @@ export default {
 };
 </script>
 <style scoped lang="scss">
+.user-page {
+  min-height: 1000px;
+}
 .li-style {
   list-style-type: none;
 }
@@ -659,6 +751,9 @@ export default {
 .v-data-table td {
   font-size: 14px;
 }
+.v-list-item {
+  align-items: flex-start;
+}
 .v-list-item .v-list-item__title,
 .v-list-item .v-list-item__subtitle {
   padding-top: 0px !important;
@@ -667,20 +762,11 @@ export default {
 .component-page {
   min-height: 800px;
 }
-.search-tracking-area {
-  width: 100%;
-  border-style: inset;
-  border-radius: 4px;
-  margin-bottom: 4px;
+::v-deep .wt-loading-message {
+  color: #3f5663;
 }
 ::v-deep .wt-select {
   width: 240px;
-  .wt-input-box {
-    .wt-input-wrapper {
-      border-radius: 4px;
-      border-color: rgba(0, 0, 0, 0.38);
-    }
-  }
   .wt-select-search-field {
     font-size: 14px;
     font-weight: 400;
@@ -688,12 +774,16 @@ export default {
 }
 .wt-btn-primary {
   color: #fff;
+  .wt-btn-before {
+    color: #fff;
+  }
 }
 .wt-btn-secondary {
   color: #305bef;
 }
 .wt-btn-disabled {
   color: #bfcdd4;
+  background: #305bef;
 }
 ::v-deep .wt-select-tags {
   .wt-select-tags-ul {
@@ -704,12 +794,9 @@ export default {
 ::v-deep .wt-input-box {
   margin-bottom: 30px;
   .wt-input-wrapper {
-    min-width: 240px;
-    border-radius: 4px;
-    border-color: rgba(0, 0, 0, 0.38);
     &.wt-input-with-label {
       .wt-input-con {
-        margin-top: -10px;
+        margin-top: -11px;
       }
     }
   }
