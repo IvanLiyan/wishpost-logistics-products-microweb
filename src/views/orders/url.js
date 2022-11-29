@@ -1,5 +1,5 @@
 export default {
-  exportOrders: '/api/exportOrders',
+  exportOrders: '/api/export-orders',
   checkExportOrderStatus: '/api/check-export-orders',
   searchOrders: '/api/order/list',
   batchInvalidateOrder: '/api/order/batch-invalidate',
