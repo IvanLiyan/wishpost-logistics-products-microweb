@@ -6,8 +6,12 @@ const NODE_ENV = process.env.NODE_ENV || 'development';
 const path = require('path');
 log('APP_NAME: ', APP_NAME);
 log('NODE_ENV: ', NODE_ENV);
+
+const publicPathDev = `/m/static/${PARENT_Name}/${APP_NAME}/`;
+const publicPathProd = `https://cdn-qa.infra.wish-cn.com/m/static/${PARENT_Name}/${APP_NAME}/`;
 module.exports = {
-  publicPath: `/m/static/${PARENT_Name}/${APP_NAME}/`,
+  // publicPath: NODE_ENV === 'production' ? publicPathProd : publicPathDev,
+  publicPath: publicPathDev,
   css: {
     extract: false,
   },
@@ -60,13 +64,13 @@ module.exports = {
   },
   configureWebpack: {
     //支持jquery
-		plugins: [
-			new webpack.ProvidePlugin({
-				$:"jquery",
-				jQuery:"jquery",
-				"windows.jQuery":"jquery"
-			})
-		],
+    plugins: [
+      new webpack.ProvidePlugin({
+        $: 'jquery',
+        jQuery: 'jquery',
+        'windows.jQuery': 'jquery',
+      }),
+    ],
     resolve: {
       alias: {
         // aliases go here

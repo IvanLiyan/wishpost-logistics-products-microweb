@@ -1,5 +1,5 @@
 import routes from './routes';
-export default {
+const data = {
   name: process.env.VUE_APP_NAME,
   routes,
   beforeEach(from, to, next) {
@@ -13,3 +13,5 @@ if (global.Vue.__share_pool__ == null && process.env.NODE_ENV === 'development')
   const init_mock_vue = require('@/dev/init').default;
   init_mock_vue();
 }
+window.MainJs = data;
+export default data;
