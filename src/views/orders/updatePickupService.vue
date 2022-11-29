@@ -189,23 +189,6 @@ export default {
   methods: {
     async submitPickupService() {
       this.loading = true;
-      // this.api.confirmCollectionOption(this.collection_option_info).then(
-      //   () => {
-      //     this.loading = false;
-      //     this.$wt.notify({
-      //       type: 'success',
-      //       message: '更新揽收信息成功，页面将自动刷新',
-      //     });
-      //     window.location.reload();
-      //   },
-      //   err => {
-      //     this.loading = false;
-      //     this.$wt.notify({
-      //       type: 'error',
-      //       message: err.message,
-      //     });
-      //   },
-      // );
       try {
         await req(URL.confirmCollectionOption, this.collection_option_info);
         this.loading = false;
@@ -223,17 +206,6 @@ export default {
       }
     },
     async getTempAccessToken() {
-      // this.api.getTempAccessToken().then(
-      //   res => {
-      //     this.collection_option_info.access_token = res.data.access_token;
-      //   },
-      //   err => {
-      //     this.$wt.notify({
-      //       type: 'error',
-      //       message: err.message,
-      //     });
-      //   },
-      // );
       try {
         const { data } = await req(URL.getTempAccessToken);
         this.collection_option_info.access_token = data.access_token;

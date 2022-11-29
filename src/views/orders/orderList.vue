@@ -336,7 +336,6 @@ export default {
         cancel_category_list: [],
         cancel_reason_list: [],
         cancel_category_customized_id: -9999999,
-        // whether this is an archive page and the date for archive
         archive_info: {
           is_archive_env: false,
           archive_date: null,
@@ -450,42 +449,6 @@ export default {
       const params = this.getParams();
       params.columns = JSON.stringify(this.meta.export_columns);
       this.exporting = true;
-      // this.api.exportOrders(params).then(
-      //   res => {
-      //     const key = res.data.key;
-      //     let time_remaining = 180; // 180s.
-      //     this.check_export_interval = setInterval(
-      //       function () {
-      //         time_remaining -= 5;
-      //         this.api.checkExportOrderStatus({ key: key }).then(res => {
-      //           if (res.data.uploaded) {
-      //             location.href = res.data.url;
-      //             this.exporting = false;
-      //             this.$wt.notify({
-      //               type: 'error',
-      //               message: this.i18n('导出成功'),
-      //             });
-      //             clearInterval(this.check_export_interval);
-      //           } else if (time_remaining < 0) {
-      //             clearInterval(this.check_export_interval);
-      //             this.exporting = false;
-      //             this.$wt.notify({
-      //               type: 'error',
-      //               message: this.i18n('下载失败请稍后再试'),
-      //             });
-      //           }
-      //         });
-      //       }.bind(this),
-      //       5000,
-      //     );
-      //   },
-      //   err => {
-      //     this.$wt.notify({
-      //       type: 'error',
-      //       message: err.msg,
-      //     });
-      //   },
-      // );
       try {
         const { data } = await req(URL.exportOrders, params);
         const key = data.key;
@@ -548,7 +511,6 @@ export default {
         this.options.page = 1;
       }
       const params = this.getParams();
-      // if this is not an archvie page, validate the start date is not earlier than archive date
       if (
         !this.meta.archive_info.is_archive_env &&
         this.$moment(params.start_date).isBefore(this.meta.archive_info.archive_date)
@@ -561,27 +523,6 @@ export default {
         this.loading = false;
         return;
       }
-      // this.api.searchOrders(params).then(
-      //   res => {
-      //     this.all_orders = res.data.results.rows;
-      //     if (this.search.order_state == 'success') {
-      //       this.switchGroup(this.current_group);
-      //       this.show_group_tab = true;
-      //     } else {
-      //       this.orders = this.all_orders;
-      //       this.show_group_tab = false;
-      //     }
-      //     this.total_order = res.data.results.num_results;
-      //     this.loading = false;
-      //   },
-      //   err => {
-      //     this.$wt.notify({
-      //       type: 'error',
-      //       message: err.msg,
-      //     });
-      //     this.loading = false;
-      //   },
-      // );
       try {
         const { data } = await req(URL.searchOrders, params);
         this.all_orders = data.results.rows;
@@ -646,24 +587,6 @@ export default {
         method = 'invalidateOrder';
       }
       this.cancel_loading = true;
-      // this.api[method](params).then(
-      //   () => {
-      //     this.cancel_loading = false;
-      //     this.$wt.notify({
-      //       type: 'success',
-      //       message: this.i18n('取消成功'),
-      //     });
-      //     this.searchOrders();
-      //     this.show_cancel_dialog = false;
-      //   },
-      //   err => {
-      //     this.cancel_loading = false;
-      //     this.$wt.notify({
-      //       type: 'error',
-      //       message: err.msg,
-      //     });
-      //   },
-      // );
       try {
         await req(URL[method], params);
         this.cancel_loading = false;
@@ -693,13 +616,6 @@ export default {
       this.show_pickup_dialog = true;
     },
     async getMeta() {
-      // this.api.getOrdersMeta().then(res => {
-      //   this.meta.countries = res.data.result.countries;
-      //   this.meta.channels = res.data.result.channels;
-      //   this.meta.order_states_categories = res.data.result.order_states_categories;
-      //   this.meta.archive_info = res.data.result.archive_info;
-      //   this.meta.export_columns = res.data.result.export_columns;
-      // });
       try {
         const { data } = await req(URL.getOrdersMeta);
         this.meta.countries = data.result.countries;
@@ -713,17 +629,6 @@ export default {
           message: err.message,
         });
       }
-      // this.api.getCancelOrderReasonCategoryList().then(res => {
-      //   this.meta.cancel_category_list.push({
-      //     id: null,
-      //     name: this.i18n('请选择'),
-      //   });
-      //   this.meta.cancel_category_list = this.meta.cancel_category_list.concat(res.data);
-      //   this.meta.cancel_category_list.push({
-      //     id: this.meta.cancel_category_customized_id,
-      //     name: this.i18n('以上都不是'),
-      //   });
-      // });
       try {
         const { data } = await req(URL.getCancelOrderReasonCategoryList);
         this.meta.cancel_category_list.push({
