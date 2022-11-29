@@ -7,11 +7,11 @@ const path = require('path');
 log('APP_NAME: ', APP_NAME);
 log('NODE_ENV: ', NODE_ENV);
 
-const pubcliPathDev = `/m/static/${PARENT_Name}/${APP_NAME}/`;
-const pubcliPathProd = `https://cdn-qa.infra.wish-cn.com/m/static/${PARENT_Name}/${APP_NAME}/`;
+const publicPathDev = `/m/static/${PARENT_Name}/${APP_NAME}/`;
+const publicPathProd = `https://cdn-qa.infra.wish-cn.com/m/static/${PARENT_Name}/${APP_NAME}/`;
 module.exports = {
-  // publicPath: NODE_ENV === 'production' ? pubcliPathProd : pubcliPathDev,
-  publicPath: pubcliPathDev,
+  // publicPath: NODE_ENV === 'production' ? publicPathProd : publicPathDev,
+  publicPath: publicPathDev,
   css: {
     extract: false,
   },
