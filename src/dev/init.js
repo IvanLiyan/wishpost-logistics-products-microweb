@@ -8,7 +8,7 @@ export default () => {
   import(
     /* webpackChunkName: "material-design-icons" */ 'material-design-icons-iconfont/dist/material-design-icons.css'
   );
-  import(/* webpackChunkName: "wt" */ '@wish/wt-vue/dist/wt-vue.min.css');
+  import(/* webpackChunkName: "wt" */ '@ContextLogic/wt-vue/dist/wt-vue.min.css');
   const APP_NAME = process.env.VUE_APP_NAME;
   const PARENT_NAME = process.env.VUE_PARENT_NAME;
   const store = new Vuex.Store({
@@ -84,25 +84,19 @@ export default () => {
   });
   Vue.use(require('vuetify-confirm'), { vuetify: vuetify });
   Vue.use(require('vue-moment'));
-  const WT = require('@wish/wt-vue').default;
+  const WT = require('@ContextLogic/wt-vue').default;
   Vue.use(WT);
-  const VueI18n = require('vue-i18n').default;
-  Vue.use(VueI18n);
-  const messages = {
-    en: {
-      message: {
-        hello: 'hello world',
-      },
-    },
-  };
-  const i18n = new VueI18n({
-    locale: 'en', // set locale
-    messages, // set locale messages
-  });
   Vue.mixin({
+    mounted() {
+      window.addEventListener('changeLocale', this.onChangeLocale);
+    },
+    destroyed() {
+      window.removeEventListener('changeLocale', this.onChangeLocale);
+    },
     methods: {
-      i18n: str => {
-        return str;
+      onChangeLocale() {
+        // forceUpdate all component when locale change
+        this.$forceUpdate();
       },
     },
   });

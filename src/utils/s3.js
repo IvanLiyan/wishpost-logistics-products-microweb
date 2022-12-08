@@ -52,7 +52,7 @@ export default {
   fallbackServerUpload: function (form, success, failure, type) {
     if (form == null) {
       failure({
-        msg: this.i18n('Your browser does not support drag file uploading.' + 'Please upload using the button instead'),
+        msg: i18n('Your browser does not support drag file uploading.' + 'Please upload using the button instead'),
       });
       return;
     }
