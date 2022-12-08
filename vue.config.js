@@ -59,14 +59,14 @@ module.exports = {
       ]);
   },
   configureWebpack: {
-    //支持jquery
-		plugins: [
-			new webpack.ProvidePlugin({
-				$:"jquery",
-				jQuery:"jquery",
-				"windows.jQuery":"jquery"
-			})
-		],
+    // 支持jquery
+    plugins: [
+      new webpack.ProvidePlugin({
+        $: 'jquery',
+        jQuery: 'jquery',
+        'windows.jQuery': 'jquery',
+      }),
+    ],
     resolve: {
       alias: {
         // aliases go here
