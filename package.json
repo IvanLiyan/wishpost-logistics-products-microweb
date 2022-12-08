@@ -3,15 +3,16 @@
   "parentName": "logistics",
   "version": "0.1.0",
   "scripts": {
-    "dev": "vue-cli-service serve --mode dev",
-    "build": "vue-cli-service build --report --mode prod",
+    "dev": "vue-cli-service serve --report --mode dev",
+    "test": "vue-cli-service build --mode test",
+    "prod": "vue-cli-service build --mode prod",
     "lint": "eslint --ext .vue,.js src --fix"
   },
   "dependencies": {
+    "@ContextLogic/wt-vue": "^0.0.2-alpha.53",
     "@mdi/font": "^4.5.95",
     "@mdi/js": "^4.5.95",
     "@wish/fe-utils": "^0.0.1-beta.5",
-    "@wish/wt-vue": "^0.0.2-alpha.40",
     "axios": "^0.27.2",
     "jquery": "^3.6.0",
     "material-design-icons-iconfont": "^4.0.5",

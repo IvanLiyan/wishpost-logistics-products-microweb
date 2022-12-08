@@ -8,7 +8,7 @@ export default () => {
   import(
     /* webpackChunkName: "material-design-icons" */ 'material-design-icons-iconfont/dist/material-design-icons.css'
   );
-  import(/* webpackChunkName: "wt" */ '@wish/wt-vue/dist/wt-vue.min.css');
+  import(/* webpackChunkName: "wt" */ '@ContextLogic/wt-vue/dist/wt-vue.min.css');
   const APP_NAME = process.env.VUE_APP_NAME;
   const PARENT_NAME = process.env.VUE_PARENT_NAME;
   const store = new Vuex.Store({
@@ -84,7 +84,7 @@ export default () => {
   });
   Vue.use(require('vuetify-confirm'), { vuetify: vuetify });
   Vue.use(require('vue-moment'));
-  const WT = require('@wish/wt-vue').default;
+  const WT = require('@ContextLogic/wt-vue').default;
   Vue.use(WT);
   const VueI18n = require('vue-i18n').default;
   Vue.use(VueI18n);
