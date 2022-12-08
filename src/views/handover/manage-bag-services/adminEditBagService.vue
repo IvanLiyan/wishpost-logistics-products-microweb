@@ -69,29 +69,32 @@
 </template>
 <script>
 import req from '@utils/request';
+import i18nMixin from '@utils/i18nMixin';
 import URL from '../url';
 export default {
   name: 'adminEditBagService',
+  // use i18nMixin for vue component template use i18n function without define
+  mixins: [i18nMixin],
   props: ['bag_service', 'is_create'],
   data: function () {
     return {
       successDialog: false,
       access_token: null,
       handover_members: [
-        { code: 1, name: this.i18n('商户') },
-        { code: 2, name: this.i18n('物流服务商') },
-        { code: 3, name: this.i18n('EPC仓库') },
-        { code: 4, name: this.i18n('HUB仓库') },
-        { code: 5, name: this.i18n('FBW仓库') },
-        { code: 6, name: this.i18n('分拣中心仓库') },
+        { code: 1, name: i18n('商户') },
+        { code: 2, name: i18n('物流服务商') },
+        { code: 3, name: i18n('EPC仓库') },
+        { code: 4, name: i18n('HUB仓库') },
+        { code: 5, name: i18n('FBW仓库') },
+        { code: 6, name: i18n('分拣中心仓库') },
       ],
       handover_pushers: [
-        { code: 1, name: this.i18n('上游') },
-        { code: 2, name: this.i18n('下游') },
+        { code: 1, name: i18n('上游') },
+        { code: 2, name: i18n('下游') },
       ],
       chooses: [
-        { value: false, text: this.i18n('否') },
-        { value: true, text: this.i18n('是') },
+        { value: false, text: i18n('否') },
+        { value: true, text: i18n('是') },
       ],
       bag_type: null,
       service_name: '',

@@ -86,23 +86,17 @@ export default () => {
   Vue.use(require('vue-moment'));
   const WT = require('@ContextLogic/wt-vue').default;
   Vue.use(WT);
-  const VueI18n = require('vue-i18n').default;
-  Vue.use(VueI18n);
-  const messages = {
-    en: {
-      message: {
-        hello: 'hello world',
-      },
-    },
-  };
-  const i18n = new VueI18n({
-    locale: 'en', // set locale
-    messages, // set locale messages
-  });
   Vue.mixin({
+    mounted() {
+      window.addEventListener('changeLocale', this.onChangeLocale);
+    },
+    destroyed() {
+      window.removeEventListener('changeLocale', this.onChangeLocale);
+    },
     methods: {
-      i18n: str => {
-        return str;
+      onChangeLocale() {
+        // forceUpdate all component when locale change
+        this.$forceUpdate();
       },
     },
   });

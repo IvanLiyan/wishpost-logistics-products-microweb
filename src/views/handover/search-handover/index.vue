@@ -354,9 +354,12 @@
 </template>
 <script>
 import req from '@utils/request';
+import i18nMixin from '@utils/i18nMixin';
 import URL from '../url';
 export default {
   name: 'adminHandoverInformation',
+  // use i18nMixin for vue component template use i18n function without define
+  mixins: [i18nMixin],
   data: function () {
     return {
       tab: null,
@@ -379,15 +382,15 @@ export default {
       show_start_tpicker: false,
       show_end_tpicker: false,
       bag_types: [],
-      bag_states: [{ state_code: null, state_name: this.i18n('默认') }],
-      time_types: [{ time_type_name: this.i18n('大包创建时间'), time_type_code: 1 }],
+      bag_states: [{ state_code: null, state_name: i18n('默认') }],
+      time_types: [{ time_type_name: i18n('大包创建时间'), time_type_code: 1 }],
       id_types: [
-        { id_type_code: 0, id_type_name: this.i18n('默认不选') },
-        { id_type_code: 1, id_type_name: this.i18n('wishpost订单号') },
-        { id_type_code: 2, id_type_name: this.i18n('物流单号') },
-        { id_type_code: 3, id_type_name: this.i18n('大包号') },
-        { id_type_code: 4, id_type_name: this.i18n('交接单号') },
-        { id_type_code: 5, id_type_name: this.i18n('物流商/仓库大包号') },
+        { id_type_code: 0, id_type_name: i18n('默认不选') },
+        { id_type_code: 1, id_type_name: i18n('wishpost订单号') },
+        { id_type_code: 2, id_type_name: i18n('物流单号') },
+        { id_type_code: 3, id_type_name: i18n('大包号') },
+        { id_type_code: 4, id_type_name: i18n('交接单号') },
+        { id_type_code: 5, id_type_name: i18n('物流商/仓库大包号') },
       ],
       upstreams: [{ name: '默认全部', code: null }],
       downstreams: [{ name: '默认全部', code: null }],
@@ -406,16 +409,16 @@ export default {
       bagsCurrentPage: 1,
       deliveryNoteCurrentPage: 1,
       delivery_note_headers: [
-        { text: this.i18n('交接单号'), value: 'delivery_note_number' },
-        { text: this.i18n('交接单状态'), value: 'state', width: '120' },
-        { text: this.i18n('创建方'), value: 'upstream_name' },
-        { text: this.i18n('揽收方'), value: 'downstream_name' },
-        { text: this.i18n('包含大包'), value: 'bag_count' },
-        { text: this.i18n('包含订单'), value: 'order_count' },
-        { text: this.i18n('实际大包数量'), value: 'actual_bag_count' },
-        { text: this.i18n('创建时间'), value: 'created_ts', width: '170' },
-        { text: this.i18n('交接时间'), value: 'handover_ts', width: '170' },
-        { text: this.i18n('操作'), value: 'action' },
+        { text: i18n('交接单号'), value: 'delivery_note_number' },
+        { text: i18n('交接单状态'), value: 'state', width: '120' },
+        { text: i18n('创建方'), value: 'upstream_name' },
+        { text: i18n('揽收方'), value: 'downstream_name' },
+        { text: i18n('包含大包'), value: 'bag_count' },
+        { text: i18n('包含订单'), value: 'order_count' },
+        { text: i18n('实际大包数量'), value: 'actual_bag_count' },
+        { text: i18n('创建时间'), value: 'created_ts', width: '170' },
+        { text: i18n('交接时间'), value: 'handover_ts', width: '170' },
+        { text: i18n('操作'), value: 'action' },
       ],
       deliveryNotePagination: {
         total: 0,

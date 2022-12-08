@@ -95,28 +95,31 @@
 </template>
 <script>
 import req from '@utils/request';
+import i18nMixin from '@utils/i18nMixin';
 import URL from './url';
 export default {
   name: 'updatePickupService',
+  // use i18nMixin for vue component template use i18n function without define
+  mixins: [i18nMixin],
   props: ['wosp_id', 'show'],
   data() {
     return {
       pickup_method: [
-        { text: this.i18n('自寄'), val: 0 },
-        { text: this.i18n('上门揽收'), val: 1 },
+        { text: i18n('自寄'), val: 0 },
+        { text: i18n('上门揽收'), val: 1 },
       ],
       pickup_service: [
-        { text: this.i18n('燕文揽收'), val: '42-0' },
-        { text: this.i18n('万色揽收'), val: '27-1' },
+        { text: i18n('燕文揽收'), val: '42-0' },
+        { text: i18n('万色揽收'), val: '27-1' },
       ],
       return_action_in_country: [
-        { text: this.i18n('销毁'), val: 0 },
-        { text: this.i18n('退回揽收地址'), val: 2 },
-        { text: this.i18n('退回退货地址'), val: 3 },
+        { text: i18n('销毁'), val: 0 },
+        { text: i18n('退回揽收地址'), val: 2 },
+        { text: i18n('退回退货地址'), val: 3 },
       ],
       reverse_logistics_mode: [
-        { text: this.i18n('揽收商退回'), val: 1 },
-        { text: this.i18n('快递预付退回'), val: 3 },
+        { text: i18n('揽收商退回'), val: 1 },
+        { text: i18n('快递预付退回'), val: 3 },
       ],
       rules: {
         required: value => !!value || 'Required',
@@ -161,14 +164,14 @@ export default {
     'collection_option_info.doorpickup': function (newVal) {
       if (newVal == 0) {
         this.return_action_in_country = [
-          { text: this.i18n('销毁'), val: 0 },
-          { text: this.i18n('退回退货地址'), val: 3 },
+          { text: i18n('销毁'), val: 0 },
+          { text: i18n('退回退货地址'), val: 3 },
         ];
       } else {
         this.return_action_in_country = [
-          { text: this.i18n('销毁'), val: 0 },
-          { text: this.i18n('退回揽收地址'), val: 2 },
-          { text: this.i18n('退回退货地址'), val: 3 },
+          { text: i18n('销毁'), val: 0 },
+          { text: i18n('退回揽收地址'), val: 2 },
+          { text: i18n('退回退货地址'), val: 3 },
         ];
       }
       console.log(444, this.return_action_in_country);
@@ -178,7 +181,7 @@ export default {
         this.reverse_logistics_mode.splice(0, 1);
       } else {
         if (this.reverse_logistics_mode.length === 1) {
-          this.reverse_logistics_mode.splice(0, 0, { text: this.i18n('揽收商退回'), val: 1 });
+          this.reverse_logistics_mode.splice(0, 0, { text: i18n('揽收商退回'), val: 1 });
         }
       }
     },

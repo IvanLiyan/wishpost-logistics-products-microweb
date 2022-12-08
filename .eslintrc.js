@@ -4,7 +4,7 @@ module.exports = {
     node: true,
     jquery: true,
   },
-  globals: { _: true, window: true },
+  globals: { _: true, window: true, i18n: true, ci18n: true, ni18n: true, cni18n: true, sprintf: true },
   extends: ['plugin:vue/essential', 'eslint:recommended', '@vue/prettier'],
   parserOptions: {
     ecmaVersion: 2020,

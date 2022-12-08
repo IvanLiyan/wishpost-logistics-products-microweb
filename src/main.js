@@ -1,4 +1,14 @@
+import { i18nModule } from '@wish/fe-utils';
 import routes from './routes';
+import viTranslations from '/translation_packages/js/vi_VN.jed.json';
+import zhTranslations from '/translation_packages/js/zh_CN.jed.json';
+// config locale transition content
+const LocaleTranslations = {
+  en: {},
+  zh: zhTranslations,
+  vi: viTranslations,
+};
+i18nModule.initJedi18nInstance(LocaleTranslations);
 const data = {
   name: process.env.VUE_APP_NAME,
   routes,

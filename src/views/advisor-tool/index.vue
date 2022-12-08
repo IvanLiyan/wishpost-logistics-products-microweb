@@ -247,11 +247,14 @@
 </template>
 <script>
 import captcha from '@component/captcha';
+import i18nMixin from '@utils/i18nMixin';
 import req from '@utils/request';
 import URL from './url';
 export default {
   name: 'advisorTool',
   components: { captcha },
+  // use i18nMixin for vue component template use i18n function without define
+  mixins: [i18nMixin],
   data() {
     return {
       valid: true,
@@ -269,20 +272,20 @@ export default {
       enabled_departure_countries_iso3: [],
       sensitivityTypes: [
         // {text: i18n("全选"), val: -1},
-        { text: this.i18n('普货'), val: 0 },
-        { text: this.i18n('带电'), val: 1 },
-        { text: this.i18n('敏感货'), val: 2 },
+        { text: i18n('普货'), val: 0 },
+        { text: i18n('带电'), val: 1 },
+        { text: i18n('敏感货'), val: 2 },
       ],
       carriers: [],
       register_policy: [
-        { text: this.i18n('默认'), val: null },
-        { text: this.i18n('妥投'), val: true },
-        { text: this.i18n('非妥投'), val: false },
+        { text: i18n('默认'), val: null },
+        { text: i18n('妥投'), val: true },
+        { text: i18n('非妥投'), val: false },
       ],
       limit_policy: [
-        { text: this.i18n('默认'), val: null },
-        { text: this.i18n('限量'), val: true },
-        { text: this.i18n('不限量'), val: false },
+        { text: i18n('默认'), val: null },
+        { text: i18n('限量'), val: true },
+        { text: i18n('不限量'), val: false },
       ],
       user: null,
       selected_sensitivity_type: null,
@@ -296,11 +299,11 @@ export default {
       items_per_page: 20,
       channels: [],
       headers: [
-        { text: this.i18n('渠道名称'), value: 'local_name' },
-        { text: this.i18n('估算费用'), value: 'fee' },
-        { text: this.i18n('API下单代码'), value: 'api_code' },
-        { text: this.i18n('已妥投订单平均时效'), value: 'delivery_ttd' },
-        { text: this.i18n('妥投率'), value: 'delivered_in_15_rate' },
+        { text: i18n('渠道名称'), value: 'local_name' },
+        { text: i18n('估算费用'), value: 'fee' },
+        { text: i18n('API下单代码'), value: 'api_code' },
+        { text: i18n('已妥投订单平均时效'), value: 'delivery_ttd' },
+        { text: i18n('妥投率'), value: 'delivered_in_15_rate' },
       ],
       weight_rules: [
         v => {
@@ -486,7 +489,7 @@ export default {
         this.searching = false;
         this.$wt.notify({
           type: 'error',
-          message: this.i18n(err.message),
+          message: i18n(err.message),
         });
       }
     },
