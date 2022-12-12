@@ -47,8 +47,6 @@
   </v-row>
 </template>
 <script>
-// import '@css/global.css';
-// import { i18n } from '@vuei18n/i18n';
 import s3 from '../utils/s3';
 export default {
   name: 'uploadFileView',

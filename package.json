@@ -14,6 +14,8 @@
     "@mdi/js": "^4.5.95",
     "@wish/fe-utils": "^0.0.1-beta.5",
     "axios": "^0.27.2",
+    "exceljs": "^3.8.0",
+    "jszip": "^3.5.0",
     "jquery": "^3.6.0",
     "material-design-icons-iconfont": "^4.0.5",
     "vue": "2.6.13",
