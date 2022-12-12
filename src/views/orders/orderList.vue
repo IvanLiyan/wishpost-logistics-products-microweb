@@ -76,7 +76,7 @@
               :label="item.name"
             />
           </wt-select>
-          <wt-input v-model="search.id_value" :label="getFieldNames"></wt-input>
+          <wt-input v-model="search.id_value" :label="getFieldNames()"></wt-input>
         </div>
         <v-row>
           <v-col>
@@ -362,36 +362,6 @@ export default {
       show_group_tab: false,
     };
   },
-  computed: {
-    getFieldNames() {
-      let result = '';
-      if (this.search.id_field_obj) {
-        switch (this.search.id_field_obj) {
-          case 'tracking_id':
-            result = i18n('Tracking Number');
-            break;
-          case 'wish_standard_tracking_id':
-            result = i18n('WishPost Order ID');
-            break;
-          case 'wish_transaction_id':
-            result = i18n('Wish Order ID');
-            break;
-          case 'user_id':
-            result = i18n('User ID');
-            break;
-          case 'username':
-            result = i18n('Username');
-            break;
-          default:
-            result = '';
-            break;
-        }
-        return result;
-      } else {
-        return result;
-      }
-    },
-  },
   watch: {
     options: {
       handler() {
@@ -432,7 +402,34 @@ export default {
     }
   },
   methods: {
-    show() {},
+    getFieldNames() {
+      let result = '';
+      if (this.search.id_field_obj) {
+        switch (this.search.id_field_obj) {
+          case 'tracking_id':
+            result = i18n('Tracking Number');
+            break;
+          case 'wish_standard_tracking_id':
+            result = i18n('WishPost Order ID');
+            break;
+          case 'wish_transaction_id':
+            result = i18n('Wish Order ID');
+            break;
+          case 'user_id':
+            result = i18n('User ID');
+            break;
+          case 'username':
+            result = i18n('Username');
+            break;
+          default:
+            result = '';
+            break;
+        }
+        return result;
+      } else {
+        return result;
+      }
+    },
     getOrderLink(item) {
       const path = this.role == 'user' ? '/home/#/user/order/' : '/order-information?order_id=';
       return path + item.order_id;
