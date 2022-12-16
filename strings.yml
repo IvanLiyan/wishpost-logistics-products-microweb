@@ -45,10 +45,10 @@ features:
     product_manager: stian@wish.com
     files:
       - src/views/advisor-tool/*.vue
-      - src/views/handover/manage-bag-services/*.vue
-      - src/views/handover/search-handover/*.vue
-      - src/views/manage-order-traffic-control/*.vue
-      - src/views/orders/*.vue
+      # - src/views/handover/manage-bag-services/*.vue
+      # - src/views/handover/search-handover/*.vue
+      # - src/views/manage-order-traffic-control/*.vue
+      # - src/views/orders/*.vue
 
     description: >
       Wishpost Logistics Products related pages like advisor-tool, manage-order-traffic-control info.
