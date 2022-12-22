@@ -5,88 +5,44 @@
         <div class="h2 mb-4">{{ i18n('批量操作订单') }}</div>
         <v-card class="mb-4">
           <v-card-text>
-            <v-row>
-              <v-col cols="2">
-                <v-autocomplete
-                  v-model="id_field_obj"
-                  :items="id_field_names"
-                  :label="i18n('ID名称')"
-                  return-object
-                  outlined
-                  dense
-                  item-text="name"
-                  item-value="field_name"
-                  hide-details="true"
-                ></v-autocomplete>
-              </v-col>
-              <v-col cols="2">
-                <v-autocomplete
-                  v-model="category"
-                  :items="categories"
-                  :label="i18n('搜索类型')"
-                  placeholder="可多选"
-                  item-text="text"
-                  item-value="value"
-                  clearable
-                  outlined
-                  dense
-                  multiple
-                ></v-autocomplete>
-              </v-col>
-              <v-col cols="2">
-                <v-text-field
-                  v-model="ticket"
-                  :label="i18n('Ticket号')"
-                  outlined
-                  dense
-                  hide-details="true"
-                ></v-text-field>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col cols="8">
-                <v-textarea
-                  v-model="tracking_ids"
-                  outlined
-                  hide-details
-                  label="请输入ids，多个id请换行分割，最多500单(标记丢件和取消订单只能输入tracking_id，搜索时可输入tracking_id或wosp_id)"
-                ></v-textarea>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col cols="1">
-                <v-btn
-                  class="white--text search-btn"
-                  color="#305BEF"
-                  @click="searchOrderRequest"
-                  :loading="loading"
-                  block
-                >
-                  搜索
-                </v-btn>
-              </v-col>
-              <v-col class="mr-2" cols="1">
-                <v-btn color="#305BEF" outlined @click="[markLost, (mark_lost = true)]" block>标记丢件</v-btn>
-              </v-col>
-              <v-col cols="1">
-                <v-btn
-                  class="white--text search-btn"
-                  color="#305BEF"
-                  @click="[batchCancel, (cancel_order = true)]"
-                  block
-                >
-                  取消订单
-                </v-btn>
-              </v-col>
-              <v-col class="mr-10" cols="1" offset-md="6">
-                <v-btn color="#305BEF" outlined block @click="batch_mark_lost = true">上传标记丢件</v-btn>
-              </v-col>
-              <v-col cols="1">
-                <v-btn class="white--text search-btn" block color="#305BEF" @click="batch_cancel_order = true">
-                  上传取消订单
-                </v-btn>
-              </v-col>
-            </v-row>
+            <div class="search-row mb">
+              <wt-select width="240" class="mr" valueKey="field_name" v-model="id_field_obj" :label="i18n('ID名称')">
+                <wt-option v-for="item in id_field_names" :key="item.field_name" :value="item" :label="item.name" />
+              </wt-select>
+              <wt-select
+                width="240"
+                multiple
+                placeholder="可多选"
+                :filterable="true"
+                class="mr"
+                v-model="category"
+                :label="i18n('搜索类型')"
+              >
+                <wt-option v-for="item in categories" :key="item.value" :value="item.value" :label="item.text" />
+              </wt-select>
+              <wt-input v-model="ticket" :label="i18n('Ticket号')"></wt-input>
+            </div>
+            <div class="search-row mb">
+              <wt-input
+                width="760"
+                v-model="tracking_ids"
+                type="textarea"
+                max-length="10000"
+                :autosize="{ minRows: 2, maxRows: 6 }"
+                label="请输入ids，多个id请换行分割，最多500单(标记丢件和取消订单只能输入tracking_id，搜索时可输入tracking_id或wosp_id)"
+              ></wt-input>
+            </div>
+            <div class="search-row" style="justify-content: space-between">
+              <div>
+                <wt-button class="mr" @click="searchOrderRequest" :loading="loading">搜索</wt-button>
+                <wt-button class="mr" type="secondary" @click="[markLost, (mark_lost = true)]">标记丢件</wt-button>
+                <wt-button @click="[batchCancel, (cancel_order = true)]">取消订单</wt-button>
+              </div>
+              <div>
+                <wt-button class="mr" type="secondary" @click="batch_mark_lost = true">上传标记丢件</wt-button>
+                <wt-button @click="batch_cancel_order = true">上传取消订单</wt-button>
+              </div>
+            </div>
           </v-card-text>
         </v-card>
         <v-card class="mt-4">
@@ -128,208 +84,125 @@
           </v-card-text>
         </v-card>
       </v-container>
-      <v-dialog v-model="mark_lost" max-width="560">
-        <v-card>
-          <v-card-title>
-            <span class="headline">选择订单类型</span>
-          </v-card-title>
-          <v-card-text>
-            <v-row>
-              <v-col cols="12" sm="12" md="12">
-                <v-select outlined dense label="类型" v-model="lost_type" :items="type_items"></v-select>
-              </v-col>
-            </v-row>
-          </v-card-text>
-          <v-card-actions>
-            <v-btn class="white--text search btn" color="blue darken-1" @click="markLostTrackings">
-              {{ i18n('确定') }}
-            </v-btn>
-            <v-btn color="blue darken-1" text @click="mark_lost = false">{{ i18n('取消') }}</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-      <v-dialog v-model="cancel_order" max-width="560">
-        <v-card>
-          <v-card-title>
-            <span class="headline">选择取消原因</span>
-          </v-card-title>
-          <v-card-text>
-            <v-row>
-              <v-col cols="12" sm="12" md="12">
-                <v-select
-                  v-model="cancel_reason_obj.category"
-                  :items="cancel_category_list"
-                  item-text="name"
-                  item-value="id"
-                  dense
-                  outlined
-                  :label="i18n('取消类别')"
-                  @change="updateCancelOrderCategory"
-                ></v-select>
-                <v-select
-                  v-if="cancel_reason_obj.category != cancel_category_customized_id"
-                  v-model="cancel_reason_obj.reason"
-                  :items="cancel_reason_list"
-                  item-text="name"
-                  item-value="code"
-                  dense
-                  return-object
-                  outlined
-                  :label="i18n('具体原因')"
-                ></v-select>
-                <v-textarea
-                  v-else-if="cancel_reason_obj.category == cancel_category_customized_id"
-                  v-model="cancel_reason_obj.customized_reason"
-                  outlined
-                  :label="i18n('取消原因')"
-                  :hint="i18n('必填，不超过200个字符')"
-                ></v-textarea>
-              </v-col>
-            </v-row>
-          </v-card-text>
-          <v-card-actions>
-            <v-btn class="white--text search btn" color="blue darken-1" @click="batchCancelOrders">
-              {{ i18n('确定') }}
-            </v-btn>
-            <v-btn color="blue darken-1" text @click="cancel_order = false">{{ i18n('取消') }}</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-      <v-dialog v-model="batch_mark_lost" max-width="560">
-        <v-card>
-          <v-card-title class="headline">{{ i18n('选择订单类型') }}</v-card-title>
-          <v-card-text>
-            <v-row>
-              <v-col cols="12" sm="12" md="12">
-                <v-select outlined dense label="类型" v-model="lost_type" :items="type_items"></v-select>
-              </v-col>
-            </v-row>
-          </v-card-text>
-          <v-card-actions>
-            <v-btn class="white--text search btn" color="blue darken-1" @click="upload_batch_mark_lost = true">
-              {{ i18n('上传') }}
-            </v-btn>
-            <v-btn color="blue darken-1" text @click="batch_mark_lost = false">{{ i18n('取消') }}</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-      <v-dialog v-model="batch_cancel_order" max-width="560">
-        <v-card>
-          <v-card-title class="headline">{{ i18n('选择取消原因') }}</v-card-title>
-          <v-card-text>
-            <v-row>
-              <v-col cols="12" sm="12" md="12">
-                <v-select
-                  v-model="cancel_reason_obj.category"
-                  :items="cancel_category_list"
-                  item-text="name"
-                  item-value="id"
-                  dense
-                  outlined
-                  :label="i18n('取消类别')"
-                  @change="updateCancelOrderCategory"
-                ></v-select>
-                <v-select
-                  v-if="cancel_reason_obj.category != cancel_category_customized_id"
-                  v-model="cancel_reason_obj.reason"
-                  :items="cancel_reason_list"
-                  item-text="name"
-                  item-value="code"
-                  dense
-                  return-object
-                  outlined
-                  :label="i18n('具体原因')"
-                ></v-select>
-                <v-textarea
-                  v-else-if="cancel_reason_obj.category == cancel_category_customized_id"
-                  v-model="cancel_reason_obj.customized_reason"
-                  outlined
-                  :label="i18n('取消原因')"
-                  :hint="i18n('必填，不超过200个字符')"
-                ></v-textarea>
-              </v-col>
-            </v-row>
-          </v-card-text>
-          <v-card-actions>
-            <v-btn class="white--text search btn" color="blue darken-1" @click="upload_batch_cancel_order = true">
-              {{ i18n('上传') }}
-            </v-btn>
-            <v-btn color="blue darken-1" text @click="batch_cancel_order = false">{{ i18n('取消') }}</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-      <v-dialog v-model="upload_batch_mark_lost" max-width="560">
-        <v-card>
-          <v-card-title>
-            <span class="headline">上传标记丢件文件</span>
-          </v-card-title>
-          <v-card-text>
-            <v-row align="center">
-              <v-col cols="6">
-                <span>{{ i18n('上传XLS文件批量导入标记丢件订单') }}</span>
-              </v-col>
-              <v-col cols="6" align="right">
-                <v-btn @click="downloadBatchUploadTemplate()" align="right">
-                  {{ i18n('下载模板') }}
-                </v-btn>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col cols="12" sm="12" md="12">
-                <excelFileReader v-model="batch_upload.data"></excelFileReader>
-              </v-col>
-            </v-row>
-          </v-card-text>
-          <v-card-actions>
-            <v-btn class="white--text search btn" color="blue darken-1" @click="batchUploadMarkLost">
-              {{ i18n('确定') }}
-            </v-btn>
-            <v-btn color="blue darken-1" text @click="[(upload_batch_mark_lost = false), (batch_mark_lost = false)]">
-              {{ i18n('取消') }}
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-      <v-dialog v-model="upload_batch_cancel_order" max-width="560">
-        <v-card>
-          <v-card-title>
-            <span class="headline">上传取消订单文件</span>
-          </v-card-title>
-          <v-card-text>
-            <v-row align="center">
-              <v-col cols="6">
-                <span>{{ i18n('上传XLS文件批量导入取消订单') }}</span>
-              </v-col>
-              <v-col cols="6" align="right">
-                <v-btn @click="downloadBatchUploadTemplate()" align="right">
-                  {{ i18n('下载模板') }}
-                </v-btn>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col cols="12" sm="12" md="12">
-                <excelFileReader v-model="batch_upload.data"></excelFileReader>
-              </v-col>
-            </v-row>
-          </v-card-text>
-          <v-card-actions>
-            <v-btn class="white--text search btn" color="blue darken-1" @click="batchUploadCancelORder">
-              {{ i18n('确定') }}
-            </v-btn>
-            <v-btn
-              color="blue darken-1"
-              text
-              @click="[(upload_batch_cancel_order = false), (batch_cancel_order = false)]"
-            >
-              {{ i18n('取消') }}
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+      <wt-dialog v-model="mark_lost" :title="i18n('选择订单类型')">
+        <wt-select class="mb" v-model="lost_type" :label="i18n('类型')">
+          <wt-option v-for="item in type_items" :key="item.value" :value="item.value" :label="item.text" />
+        </wt-select>
+        <div slot="footer">
+          <wt-button type="primary" @click="markLostTrackings">{{ i18n('确定') }}</wt-button>
+          <wt-button type="secondary" @click="mark_lost = false">{{ i18n('取消') }}</wt-button>
+        </div>
+      </wt-dialog>
+      <wt-dialog v-model="cancel_order" :title="i18n('选择取消原因')">
+        <wt-select
+          @change="updateCancelOrderCategory"
+          class="mb"
+          v-model="cancel_reason_obj.category"
+          :label="i18n('取消类别')"
+        >
+          <wt-option v-for="item in cancel_category_list" :key="item.id" :value="item.id" :label="item.name" />
+        </wt-select>
+        <wt-select
+          v-if="cancel_reason_obj.category != cancel_category_customized_id"
+          class="mb"
+          v-model="cancel_reason_obj.reason"
+          valueKey="code"
+          :label="i18n('具体原因')"
+        >
+          <wt-option v-for="item in cancel_reason_list" :key="item.code" :value="item" :label="item.name" />
+        </wt-select>
+        <wt-input
+          type="textarea"
+          :label="i18n('取消原因')"
+          :placeholder="i18n('必填，不超过200个字符')"
+          v-else-if="cancel_reason_obj.category == cancel_category_customized_id"
+          v-model="cancel_reason_obj.customized_reason"
+        ></wt-input>
+        <div slot="footer">
+          <wt-button type="primary" @click="batchCancelOrders">{{ i18n('确定') }}</wt-button>
+          <wt-button type="secondary" @click="cancel_order = false">{{ i18n('取消') }}</wt-button>
+        </div>
+      </wt-dialog>
+      <wt-dialog v-model="batch_mark_lost" :title="i18n('选择订单类型')">
+        <wt-select class="mb" v-model="lost_type" :label="i18n('类型')">
+          <wt-option v-for="item in type_items" :key="item.value" :value="item.value" :label="item.text" />
+        </wt-select>
+        <div slot="footer">
+          <wt-button type="primary" @click="upload_batch_mark_lost = true">{{ i18n('上传') }}</wt-button>
+          <wt-button type="secondary" @click="batch_mark_lost = false">{{ i18n('取消') }}</wt-button>
+        </div>
+      </wt-dialog>
+      <wt-dialog v-model="batch_cancel_order" :title="i18n('选择取消原因')">
+        <wt-select
+          class="mb"
+          @change="updateCancelOrderCategory"
+          v-model="cancel_reason_obj.category"
+          :label="i18n('取消类别')"
+        >
+          <wt-option v-for="item in cancel_category_list" :key="item.id" :value="item.id" :label="item.name" />
+        </wt-select>
+        <wt-select
+          v-if="cancel_reason_obj.category != cancel_category_customized_id"
+          class="mb"
+          v-model="cancel_reason_obj.reason"
+          valueKey="code"
+          :label="i18n('具体原因')"
+          @change="show"
+        >
+          <wt-option v-for="item in cancel_reason_list" :key="item.code" :value="item" :label="item.name" />
+        </wt-select>
+        <wt-input
+          type="textarea"
+          :label="i18n('取消原因')"
+          :placeholder="i18n('必填，不超过200个字符')"
+          v-else-if="cancel_reason_obj.category == cancel_category_customized_id"
+          v-model="cancel_reason_obj.customized_reason"
+        ></wt-input>
+        <div slot="footer">
+          <wt-button type="primary" @click="upload_batch_cancel_order = true">{{ i18n('上传') }}</wt-button>
+          <wt-button type="secondary" @click="batch_cancel_order = false">{{ i18n('取消') }}</wt-button>
+        </div>
+      </wt-dialog>
+      <wt-dialog v-model="upload_batch_mark_lost" :width="520" title="上传标记丢件文件">
+        <div class="search-row" style="justify-content: space-between">
+          <span>{{ i18n('上传XLS文件批量导入标记丢件订单') }}</span>
+          <wt-button @click="downloadBatchUploadTemplate()" align="right">
+            {{ i18n('下载模板') }}
+          </wt-button>
+        </div>
+        <div style="width: 480px" class="mb">
+          <excelFileReader v-model="batch_upload.data"></excelFileReader>
+        </div>
+        <div slot="footer">
+          <wt-button type="primary" @click="batchUploadMarkLost">{{ i18n('确定') }}</wt-button>
+          <wt-button type="secondary" @click="[(upload_batch_mark_lost = false), (batch_mark_lost = false)]">
+            {{ i18n('取消') }}
+          </wt-button>
+        </div>
+      </wt-dialog>
+      <wt-dialog v-model="upload_batch_cancel_order" :width="520" title="上传取消订单文件">
+        <div class="search-row" style="justify-content: space-between">
+          <span>{{ i18n('上传XLS文件批量导入取消订单') }}</span>
+          <wt-button @click="downloadBatchUploadTemplate()" align="right">
+            {{ i18n('下载模板') }}
+          </wt-button>
+        </div>
+        <div style="width: 480px" class="mb">
+          <excelFileReader v-model="batch_upload.data"></excelFileReader>
+        </div>
+        <div slot="footer">
+          <wt-button type="primary" @click="batchUploadCancelORder">{{ i18n('确定') }}</wt-button>
+          <wt-button type="secondary" @click="[(upload_batch_cancel_order = false), (batch_cancel_order = false)]">
+            {{ i18n('取消') }}
+          </wt-button>
+        </div>
+      </wt-dialog>
     </v-container>
   </div>
 </template>
 <script>
+import req from '@utils/request';
+import URL from './url';
 import excelFileReader from '@utils/excelFileReader';
 import { downloadFile } from '@utils/FileUtil';
 export default {
@@ -340,7 +213,7 @@ export default {
       tracking_ids: [],
       wish_standard_tracking_ids: [],
       category: null,
-      id_field_obj: null,
+      id_field_obj: {},
       ticket: null,
       upload_batch_mark_lost: false,
       upload_batch_cancel_order: false,
@@ -361,7 +234,7 @@ export default {
       cancel_reason_obj: {
         order_id: '',
         category: null,
-        reason: null,
+        reason: {},
         customized_reason: null,
       },
       batch_upload: {
@@ -400,18 +273,35 @@ export default {
     this.initParams();
   },
   methods: {
-    initParams() {
-      this.api.getCancelOrderReasonCategoryList().then(res => {
+    async initParams() {
+      // this.api.getCancelOrderReasonCategoryList().then(res => {
+      //   this.cancel_category_list.push({
+      //     id: null,
+      //     name: this.i18n('请选择'),
+      //   });
+      //   this.cancel_category_list = this.cancel_category_list.concat(res.data);
+      //   this.cancel_category_list.push({
+      //     id: this.cancel_category_customized_id,
+      //     name: this.i18n('以上都不是'),
+      //   });
+      // });
+      try {
+        const { data } = await req(URL.getCancelOrderReasonCategoryList);
         this.cancel_category_list.push({
           id: null,
           name: this.i18n('请选择'),
         });
-        this.cancel_category_list = this.cancel_category_list.concat(res.data);
+        this.cancel_category_list = this.cancel_category_list.concat(data);
         this.cancel_category_list.push({
           id: this.cancel_category_customized_id,
           name: this.i18n('以上都不是'),
         });
-      });
+      } catch (err) {
+        this.$wt.notify({
+          type: 'error',
+          message: err.message,
+        });
+      }
     },
     getParams() {
       const params = {
@@ -423,25 +313,37 @@ export default {
       }
       return params;
     },
-    searchOrderRequest() {
+    async searchOrderRequest() {
       this.loading = false;
       const params = this.getParams();
       this.loading = true;
-      this.api.searchOrderRequest(params).then(
-        res => {
-          this.loading = false;
-          this.result = res.data.result;
-        },
-        err => {
-          this.loading = false;
-          this.$wt.notify({
-            type: 'error',
-            message: err.msg,
-          });
-        },
-      );
+      // this.api.searchOrderRequest(params).then(
+      //   res => {
+      //     this.loading = false;
+      //     this.result = res.data.result;
+      //   },
+      //   err => {
+      //     this.loading = false;
+      //     this.$wt.notify({
+      //       type: 'error',
+      //       message: err.msg,
+      //     });
+      //   },
+      // );
+      try {
+        const { data } = await req(URL.searchOrderRequest, params);
+        this.loading = false;
+        this.result = data.result;
+      } catch (err) {
+        this.loading = false;
+        this.$wt.notify({
+          type: 'error',
+          message: err.message,
+        });
+      }
     },
     updateCancelOrderCategory() {
+      console.log(333, this.cancel_reason_obj.category);
       this.cancel_reason_obj.reason = null;
       this.cancel_reason_list = this.cancel_category_list.find(
         entry => entry.id == this.cancel_reason_obj.category,
@@ -453,7 +355,7 @@ export default {
     batchCancel() {
       this.cancel_order = true;
     },
-    batchUploadMarkLost() {
+    async batchUploadMarkLost() {
       this.batch_upload.error = '';
       this.batch_upload.msg = '';
       this.batch_upload.loading = true;
@@ -464,25 +366,40 @@ export default {
         lost_type: this.lost_type,
         ticket: this.ticket,
       };
-      this.api.markLostOrders(params).then(
-        res => {
-          this.upload_batch_mark_lost = false;
-          this.batch_mark_lost = false;
-          this.loading = false;
-          this.result = res.data.result;
-        },
-        err => {
-          this.loading = false;
-          this.$wt.notify({
-            type: 'error',
-            message: err.msg,
-          });
-          this.upload_batch_mark_lost = false;
-          this.batch_mark_lost = false;
-        },
-      );
+      // this.api.markLostOrders(params).then(
+      //   res => {
+      //     this.upload_batch_mark_lost = false;
+      //     this.batch_mark_lost = false;
+      //     this.loading = false;
+      //     this.result = res.data.result;
+      //   },
+      //   err => {
+      //     this.loading = false;
+      //     this.$wt.notify({
+      //       type: 'error',
+      //       message: err.msg,
+      //     });
+      //     this.upload_batch_mark_lost = false;
+      //     this.batch_mark_lost = false;
+      //   },
+      // );
+      try {
+        const { data } = await req(URL.markLostOrders, params);
+        this.upload_batch_mark_lost = false;
+        this.batch_mark_lost = false;
+        this.loading = false;
+        this.result = data.result;
+      } catch (err) {
+        this.loading = false;
+        this.$wt.notify({
+          type: 'error',
+          message: err.message,
+        });
+        this.upload_batch_mark_lost = false;
+        this.batch_mark_lost = false;
+      }
     },
-    batchUploadCancelORder() {
+    async batchUploadCancelORder() {
       this.batch_upload.error = '';
       this.batch_upload.msg = '';
       this.batch_upload.loading = true;
@@ -507,38 +424,68 @@ export default {
         cancel_reason_code: this.cancel_reason_obj.reason ? this.cancel_reason_obj.reason.code : null,
         ticket: this.ticket,
       };
-      this.api.batchInvalidateOrder(params).then(
-        res => {
-          this.result = [];
-          this.loading = false;
-          const result_dict = res.data;
-          Object.keys(result_dict).forEach(entry => {
-            const results = result_dict[entry];
-            results.forEach(el => {
-              this.result.push({
-                tracking_id: el.tracking_id,
-                wish_standard_tracking_id: el.wish_standard_tracking_id,
-                message: el.message,
-                ticket: el.ticket,
-                state: el.state,
-                category: el.category,
-                last_updated_time: el.last_updated_time,
-              });
+      // this.api.batchInvalidateOrder(params).then(
+      //   res => {
+      //     this.result = [];
+      //     this.loading = false;
+      //     const result_dict = res.data;
+      //     Object.keys(result_dict).forEach(entry => {
+      //       const results = result_dict[entry];
+      //       results.forEach(el => {
+      //         this.result.push({
+      //           tracking_id: el.tracking_id,
+      //           wish_standard_tracking_id: el.wish_standard_tracking_id,
+      //           message: el.message,
+      //           ticket: el.ticket,
+      //           state: el.state,
+      //           category: el.category,
+      //           last_updated_time: el.last_updated_time,
+      //         });
+      //       });
+      //     });
+      //     this.upload_batch_cancel_order = false;
+      //     this.batch_cancel_order = false;
+      //   },
+      //   err => {
+      //     this.loading = false;
+      //     this.$wt.notify({
+      //       type: 'error',
+      //       message: err.msg,
+      //     });
+      //     this.upload_batch_cancel_order = false;
+      //     this.batch_cancel_order = false;
+      //   },
+      // );
+      try {
+        const { data } = await req(URL.batchInvalidateOrder, params);
+        this.result = [];
+        this.loading = false;
+        const result_dict = data;
+        Object.keys(result_dict).forEach(entry => {
+          const results = result_dict[entry];
+          results.forEach(el => {
+            this.result.push({
+              tracking_id: el.tracking_id,
+              wish_standard_tracking_id: el.wish_standard_tracking_id,
+              message: el.message,
+              ticket: el.ticket,
+              state: el.state,
+              category: el.category,
+              last_updated_time: el.last_updated_time,
             });
           });
-          this.upload_batch_cancel_order = false;
-          this.batch_cancel_order = false;
-        },
-        err => {
-          this.loading = false;
-          this.$wt.notify({
-            type: 'error',
-            message: err.msg,
-          });
-          this.upload_batch_cancel_order = false;
-          this.batch_cancel_order = false;
-        },
-      );
+        });
+        this.upload_batch_cancel_order = false;
+        this.batch_cancel_order = false;
+      } catch (err) {
+        this.loading = false;
+        this.$wt.notify({
+          type: 'error',
+          message: err.message,
+        });
+        this.upload_batch_mark_lost = false;
+        this.batch_mark_lost = false;
+      }
     },
     downloadBatchUploadTemplate() {
       const Excel = require('exceljs');
@@ -560,7 +507,7 @@ export default {
       this.cancel_reason_obj.reason = null;
       this.cancel_reason_obj.customized_reason = null;
     },
-    markLostTrackings() {
+    async markLostTrackings() {
       if (!this.lost_type) {
         this.$wt.notify({
           type: 'error',
@@ -570,28 +517,43 @@ export default {
       }
       const trackings = this.tracking_ids.split(/\s+/);
       this.loading = true;
-      this.api
-        .markLostOrders({
+      // this.api
+      //   .markLostOrders({
+      //     tracking_ids: trackings,
+      //     lost_type: this.lost_type,
+      //     ticket: this.ticket,
+      //   })
+      //   .then(
+      //     res => {
+      //       this.loading = false;
+      //       this.result = res.data.result;
+      //     },
+      //     err => {
+      //       this.loading = false;
+      //       this.$wt.notify({
+      //         type: 'error',
+      //         message: err.msg,
+      //       });
+      //     },
+      //   );
+      try {
+        const { data } = await req(URL.markLostOrders, {
           tracking_ids: trackings,
           lost_type: this.lost_type,
           ticket: this.ticket,
-        })
-        .then(
-          res => {
-            this.loading = false;
-            this.result = res.data.result;
-          },
-          err => {
-            this.loading = false;
-            this.$wt.notify({
-              type: 'error',
-              message: err.msg,
-            });
-          },
-        );
+        });
+        this.loading = false;
+        this.result = data.result;
+      } catch (err) {
+        this.loading = false;
+        this.$wt.notify({
+          type: 'error',
+          message: err.message,
+        });
+      }
       this.mark_lost = false;
     },
-    batchCancelOrders() {
+    async batchCancelOrders() {
       const trackings = this.tracking_ids.split(/\s+/);
       const customized_reason = this.cancel_reason_obj.customized_reason;
       if (
@@ -612,45 +574,150 @@ export default {
         cancel_reason_code: this.cancel_reason_obj.reason ? this.cancel_reason_obj.reason.code : null,
         ticket: this.ticket,
       };
-      this.api.batchInvalidateOrder(params).then(
-        res => {
-          this.result = [];
-          this.loading = false;
-          const result_dict = res.data;
-          Object.keys(result_dict).forEach(entry => {
-            const results = result_dict[entry];
-            results.forEach(el => {
-              this.result.push({
-                tracking_id: el.tracking_id,
-                wish_standard_tracking_id: el.wish_standard_tracking_id,
-                message: el.message,
-                ticket: el.ticket,
-                state: el.state,
-                category: el.category,
-                last_updated_time: el.last_updated_time,
-              });
+      // this.api.batchInvalidateOrder(params).then(
+      //   res => {
+      //     this.result = [];
+      //     this.loading = false;
+      //     const result_dict = res.data;
+      //     Object.keys(result_dict).forEach(entry => {
+      //       const results = result_dict[entry];
+      //       results.forEach(el => {
+      //         this.result.push({
+      //           tracking_id: el.tracking_id,
+      //           wish_standard_tracking_id: el.wish_standard_tracking_id,
+      //           message: el.message,
+      //           ticket: el.ticket,
+      //           state: el.state,
+      //           category: el.category,
+      //           last_updated_time: el.last_updated_time,
+      //         });
+      //       });
+      //     });
+      //     this.cancel_order = false;
+      //   },
+      //   err => {
+      //     this.cancel_loading = false;
+      //     this.$wt.notify({
+      //       type: 'error',
+      //       message: err.msg,
+      //     });
+      //   },
+      // );
+      try {
+        const { data } = await req(URL.batchInvalidateOrder, params);
+        this.result = [];
+        this.loading = false;
+        const result_dict = data;
+        Object.keys(result_dict).forEach(entry => {
+          const results = result_dict[entry];
+          results.forEach(el => {
+            this.result.push({
+              tracking_id: el.tracking_id,
+              wish_standard_tracking_id: el.wish_standard_tracking_id,
+              message: el.message,
+              ticket: el.ticket,
+              state: el.state,
+              category: el.category,
+              last_updated_time: el.last_updated_time,
             });
           });
-          this.cancel_order = false;
-        },
-        err => {
-          this.cancel_loading = false;
-          this.$wt.notify({
-            type: 'error',
-            message: err.msg,
-          });
-        },
-      );
+        });
+        this.cancel_order = false;
+      } catch (err) {
+        this.cancel_loading = false;
+        this.$wt.notify({
+          type: 'error',
+          message: err.message,
+        });
+      }
     },
   },
 };
 </script>
-<style scoped>
-.order-page {
-  padding: 24px;
+<style lang="scss" scoped>
+.search-row {
+  display: flex;
+  flex-wrap: wrap;
+  .search-left {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .search-right {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    padding-top: 10px;
+  }
+  .text-filed-wrapper {
+    width: 250px;
+  }
 }
-.card_row {
-  padding-top: 20px;
-  padding-left: 20px;
+.mr {
+  margin-right: 20px;
+}
+.mb {
+  margin-bottom: 30px;
+}
+::v-deep .wt-select {
+  .wt-select-search-field {
+    font-size: 14px;
+    font-weight: 400;
+  }
+  .wt-select-choice .wt-tag span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+.wt-btn-primary {
+  color: #fff !important;
+  .wt-btn-before {
+    color: #fff;
+  }
+}
+.wt-btn-secondary {
+  color: #305bef;
+}
+.wt-btn-disabled {
+  color: #bfcdd4;
+  background: #305bef;
+}
+::v-deep .wt-select-tags {
+  .wt-select-tags-ul {
+    padding-left: 0;
+    padding-right: 20px;
+  }
+}
+::v-deep .wt-dialog {
+  .wt-btn-primary {
+    color: #fff !important;
+    .wt-btn-content {
+      color: #fff !important;
+    }
+  }
+}
+::v-deep .wt-input-box {
+  .wt-input-wrapper {
+    &.wt-input-with-label {
+      .wt-input-con {
+        margin-top: -11px;
+      }
+    }
+  }
+}
+::v-deep .v-input {
+  .v-input__control {
+    .v-input_slot {
+      min-height: 36px !important;
+    }
+  }
+}
+::v-deep .wt-popper .wt-picker-panel-body-wrapper .wt-picker-confirm {
+  .wt-btn-primary {
+    color: #fff !important;
+    .wt-btn-before {
+      color: #fff;
+    }
+  }
 }
 </style>

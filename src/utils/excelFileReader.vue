@@ -1,22 +1,17 @@
 <template>
-  <div>
-    <v-row>
-      <v-col cols="12">
-        <v-file-input
-          v-model="file"
-          :label="label"
-          prepend-icon="attach_file"
-          :clearable="clearable"
-          clear-icon="clear"
-          :loading="loading"
-          :disabled="loading"
-          accept=".xls,.xlsx"
-        ></v-file-input>
-      </v-col>
-      <v-col cols="12">
-        <a v-if="template" :href="`${template}`">{{ i18n('下载模板') }}</a>
-      </v-col>
-    </v-row>
+  <div style="display: flex; justify-content: space-between; align-items: center">
+    <v-file-input
+      v-model="file"
+      :label="label"
+      prepend-icon="attach_file"
+      :clearable="clearable"
+      clear-icon="clear"
+      :loading="loading"
+      :disabled="loading"
+      accept=".xls,.xlsx"
+      full-width
+    ></v-file-input>
+    <a v-if="template" :href="`${template}`">{{ i18n('下载模板') }}</a>
   </div>
 </template>
 <script>
