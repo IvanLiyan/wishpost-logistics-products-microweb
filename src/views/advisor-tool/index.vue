@@ -172,7 +172,7 @@
           >
             <template v-slot:item.fee="{ item }">
               <v-col>
-                <v-row style="margin-top: 1px">
+                <v-row>
                   <span>{{ item.fee }}</span>
                   <!-- <template v-slot:activator="{ on, attrs }">
                     <wt-tooltip :content="item.message" placement="top">
@@ -400,9 +400,13 @@ export default {
   },
   mounted() {
     this.init();
+    window.addEventListener('changeLocale', this.init);
   },
   methods: {
     async init() {
+      this.carriers = [];
+      this.countries = [];
+      this.enabled_departure_countries = [];
       this.user = this.$store.state.user;
       if (this.user.is_user && this.user.departure_country) {
         this.departure_country = this.user.departure_country;
@@ -421,12 +425,12 @@ export default {
         });
         countries.forEach(el => {
           this.countries.push({
-            text: `${el.country_name_cn} (${el.country_name_en})`,
+            text: `${el.country_name_localized} (${el.country_name_en})`,
             val: el.iso3,
           });
           if (this.enabled_departure_countries_iso3.indexOf(el.iso3) > -1) {
             this.enabled_departure_countries.push({
-              text: `${el.country_name_cn} (${el.country_name_en})`,
+              text: `${el.country_name_localized} (${el.country_name_en})`,
               val: el.iso3,
             });
           }
