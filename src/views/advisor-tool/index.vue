@@ -3,22 +3,42 @@
     <v-container fluid>
       <v-container>
         <captcha ref="captcha"></captcha>
-        <div class="h2 mb-4">{{ i18n('物流咨询工具') }}</div>
+        <div class="h2 mb-4">{{ i18n('Search Logistics Channel') }}</div>
         <v-card>
           <v-container fluid style="padding: 16px">
             <v-form ref="form" v-model="valid">
               <div class="search-row">
-                <wt-select class="mr" :filterable="true" v-model="selected_country" :placeholder="i18n('目的国')">
+                <wt-select
+                  class="mr"
+                  :filterable="true"
+                  v-model="selected_country"
+                  :label="ci18n('Filter Logistics Channel by field', 'Destination')"
+                >
                   <wt-option v-for="item in countries" :key="item.text" :value="item.val" :label="item.text" />
                 </wt-select>
-                <wt-select class="mr" v-model="selected_sensitivity_type" :placeholder="i18n('商品属性')">
+                <wt-select
+                  class="mr"
+                  :filterable="true"
+                  v-model="departure_country"
+                  :label="i18n('Country/Region of Departure')"
+                >
+                  <wt-option
+                    v-for="item in enabled_departure_countries"
+                    :key="item.text"
+                    :value="item.val"
+                    :label="item.text"
+                  />
+                </wt-select>
+                <wt-select class="mr" v-model="selected_sensitivity_type" :label="i18n('Product Type')">
                   <wt-option v-for="item in sensitivityTypes" :key="item.text" :value="item.val" :label="item.text" />
                 </wt-select>
+              </div>
+              <div class="search-row">
                 <span class="text-filed-wrapper" style="width: 260px">
                   <v-text-field
                     class="mr"
                     v-model="value"
-                    :label="i18n('商品价值')"
+                    :label="i18n('Product Value')"
                     :prefix="currency"
                     type="number"
                     min="0"
@@ -30,14 +50,14 @@
                 <span class="text-filed-wrapper">
                   <v-text-field
                     v-model="weight"
-                    :label="i18n('商品重量')"
+                    :label="i18n('Product Weight')"
                     suffix="kg"
                     type="number"
                     min="0.001"
                     max="9999"
                     outlined
                     :rules="weight_rules"
-                    hint="最多支持３位小数，如3.435"
+                    :hint="i18n('up to 3 decimals, for example 3.435')"
                     dense
                   ></v-text-field>
                 </span>
@@ -67,8 +87,8 @@
               <div class="search-left">
                 <wt-select
                   v-model="selected_carriers"
-                  :placeholder="i18n('物流商')"
-                  :label="i18n('物流商')"
+                  :placeholder="i18n('Logistics carrier')"
+                  :label="i18n('Logistics carrier')"
                   multiple
                   :disabled="disableFilter"
                   class="mr"
@@ -76,10 +96,20 @@
                 >
                   <wt-option v-for="item in carriers" :key="item.text" :value="item.val" :label="item.text" />
                 </wt-select>
-                <wt-select class="mr" :disabled="disableFilter" v-model="selected_register" :label="i18n('妥投政策')">
+                <wt-select
+                  class="mr"
+                  :disabled="disableFilter"
+                  v-model="selected_register"
+                  :label="ci18n('Search Logistics Channel: Tracking Option (provided or not provided)', 'Tracking')"
+                >
                   <wt-option v-for="item in register_policy" :key="item.text" :value="item.val" :label="item.text" />
                 </wt-select>
-                <wt-select class="mr" :disabled="disableFilter" v-model="selected_limit" :label="i18n('限量政策')">
+                <wt-select
+                  class="mr"
+                  :disabled="disableFilter"
+                  v-model="selected_limit"
+                  :label="ci18n('Search Logistics Channel: Volume Option (limited or unlimited)', 'Volume')"
+                >
                   <wt-option v-for="item in limit_policy" :key="item.text" :value="item.val" :label="item.text" />
                 </wt-select>
                 <wt-input class="mr" v-model="search_keyword" :label="i18n('Search')" :placeholder="i18n('Search')">
@@ -89,36 +119,36 @@
               <div class="search-right">
                 <v-btn
                   :class="delivery_ttd_sort ? 'blue--text' : 'grey--text'"
-                  class="mr"
+                  class="mr sort-btn"
                   rounded
                   small
                   :color="delivery_ttd_sort ? '#ECF8FD' : '#F9F9F9'"
                   @click="deliveryTtdSort"
                   :disabled="disableFilter"
                 >
-                  {{ i18n('时效快优先') }}
+                  {{ ci18n('ranking by shipping time', 'Fast shipping time') }}
                 </v-btn>
                 <v-btn
                   :class="refund_rate_sort ? 'blue--text' : 'grey--text'"
-                  class="mr"
+                  class="mr sort-btn"
                   rounded
                   small
                   :color="refund_rate_sort ? '#ECF8FD' : '#F9F9F9'"
                   @click="refundRateSort"
                   :disabled="disableFilter"
                 >
-                  {{ i18n('低退款率优先') }}
+                  {{ ci18n('ranking by refund rate', 'Low refund rate') }}
                 </v-btn>
                 <v-btn
                   :class="fee_sort ? 'blue--text' : 'grey--text'"
-                  class="mr"
+                  class="mr sort-btn"
                   rounded
                   small
                   :color="fee_sort ? '#ECF8FD' : '#F9F9F9'"
                   @click="feeSort"
                   :disabled="disableFilter"
                 >
-                  {{ i18n('低价优先') }}
+                  {{ ci18n('ranking by price', 'Low price') }}
                 </v-btn>
               </div>
             </div>
@@ -142,7 +172,7 @@
           >
             <template v-slot:item.fee="{ item }">
               <v-col>
-                <v-row style="margin-top: 1px">
+                <v-row>
                   <span>{{ item.fee }}</span>
                   <!-- <template v-slot:activator="{ on, attrs }">
                     <wt-tooltip :content="item.message" placement="top">
@@ -167,10 +197,10 @@
                     style="bottom: 10px"
                     small
                   >
-                    {{ i18n('妥投') }}
+                    {{ i18n('Tracking provided') }}
                   </v-chip>
                   <v-chip v-else class="ma-2" color="#FFE6EA" text-color="#A61C32" style="bottom: 10px" small>
-                    {{ i18n('非妥投') }}
+                    {{ i18n('Tracking not provided') }}
                   </v-chip>
                   <v-chip
                     v-if="item.is_limited"
@@ -180,12 +210,12 @@
                     style="bottom: 10px"
                     small
                   >
-                    {{ i18n('限量') }}
+                    {{ ci18n('has volume limits', 'Limited') }}
                   </v-chip>
                 </v-row>
                 <v-row>
-                  <span class="text-caption text-uppercase">
-                    退款率
+                  <span class="text-caption">
+                    {{ i18n('Refund rate') }}
                     <b
                       :style="{
                         color: colors[item.refund_rate_in_90_rank - 1],
@@ -210,19 +240,19 @@
               <v-row style="margin-top: 8px">
                 <v-col>
                   {{ item.delivered_in_15_rate }}
-                  <p style="font-size: 10px" color="#ddd">{{ i18n('15天') }}</p>
+                  <p style="font-size: 10px" color="#ddd">{{ ci18n('sampled time range', '15 days') }}</p>
                 </v-col>
                 <v-col>
                   {{ item.delivered_in_30_rate }}
-                  <p style="font-size: 10px" color="#ddd">{{ i18n('30天') }}</p>
+                  <p style="font-size: 10px" color="#ddd">{{ ci18n('sampled time range', '30 days') }}</p>
                 </v-col>
                 <v-col>
                   {{ item.delivered_in_45_rate }}
-                  <p style="font-size: 10px" color="#ddd">{{ i18n('45天') }}</p>
+                  <p style="font-size: 10px" color="#ddd">{{ ci18n('sampled time range', '45 days') }}</p>
                 </v-col>
                 <v-col>
                   {{ item.delivered_in_60_rate }}
-                  <p style="font-size: 10px" color="#ddd">{{ i18n('60天') }}</p>
+                  <p style="font-size: 10px" color="#ddd">{{ ci18n('sampled time range', '60 days') }}</p>
                 </v-col>
               </v-row>
             </template>
@@ -234,11 +264,15 @@
 </template>
 <script>
 import captcha from '@component/captcha';
+import i18nMixin from '@utils/i18nMixin';
 import req from '@utils/request';
+import { ci18n, i18n } from '@wish/fe-utils/util/i18n';
 import URL from './url';
 export default {
   name: 'advisorTool',
   components: { captcha },
+  // use i18nMixin for vue component template use i18n function without define
+  mixins: [i18nMixin],
   data() {
     return {
       valid: true,
@@ -248,30 +282,39 @@ export default {
       delivery_ttd_sort: false,
       fee_sort: false,
       colors: ['#018f12', '#fcd303', '#ff7300', '#ff0000', '#8f0101'],
-      label: ['低', '偏低', '中', '偏高', '高'],
+      label: [
+        ci18n('refund rate', 'Low'),
+        ci18n('refund rate', 'Medium low'),
+        ci18n('refund rate', 'Medium'),
+        ci18n('refund rate', 'Medium High'),
+        ci18n('refund rate', 'High'),
+      ],
       search_keyword: '',
       countries: [],
       eu_countries: [],
+      enabled_departure_countries: [{ text: this.i18n('All'), val: null }],
+      enabled_departure_countries_iso3: [],
       sensitivityTypes: [
         // {text: i18n("全选"), val: -1},
-        { text: this.i18n('普货'), val: 0 },
-        { text: this.i18n('带电'), val: 1 },
-        { text: this.i18n('敏感货'), val: 2 },
+        { text: i18n('General product'), val: 0 },
+        { text: i18n('Special product'), val: 1 },
+        { text: i18n('Sensitive product'), val: 2 },
       ],
       carriers: [],
       register_policy: [
-        { text: this.i18n('默认'), val: null },
-        { text: this.i18n('妥投'), val: true },
-        { text: this.i18n('非妥投'), val: false },
+        { text: ci18n('default selection', 'All'), val: null },
+        { text: ci18n('is tracking provided', 'Provided'), val: true },
+        { text: ci18n('is tracking provided', 'Not provided'), val: false },
       ],
       limit_policy: [
-        { text: this.i18n('默认'), val: null },
-        { text: this.i18n('限量'), val: true },
-        { text: this.i18n('不限量'), val: false },
+        { text: ci18n('default selection', 'All'), val: null },
+        { text: ci18n('has volume limits', 'Limited'), val: true },
+        { text: ci18n('has volume limits', 'Unlimited'), val: false },
       ],
       user: null,
       selected_sensitivity_type: null,
       selected_country: null,
+      departure_country: null,
       selected_carriers: [],
       selected_register: null,
       selected_limit: null,
@@ -280,22 +323,22 @@ export default {
       items_per_page: 20,
       channels: [],
       headers: [
-        { text: this.i18n('渠道名称'), value: 'local_name' },
-        { text: this.i18n('估算费用'), value: 'fee' },
-        { text: this.i18n('API下单代码'), value: 'api_code' },
-        { text: this.i18n('已妥投订单平均时效'), value: 'delivery_ttd' },
-        { text: this.i18n('妥投率'), value: 'delivered_in_15_rate' },
+        { text: i18n('Channel Name'), value: 'local_name' },
+        { text: i18n('Estimated Shipping Fee'), value: 'fee' },
+        { text: i18n('API Order Code'), value: 'api_code' },
+        { text: i18n('Average Shipping Time of Delivered Orders'), value: 'delivery_ttd' },
+        { text: i18n('Delivery Rate'), value: 'delivered_in_15_rate' },
       ],
       weight_rules: [
         v => {
           if (!v) {
-            return '必填';
+            return ci18n('Required field', 'Required');
           }
           const v_str = v.toString();
           const dot_index = v_str.indexOf('.');
           if (dot_index != -1) {
             if (v_str.slice(dot_index + 1).length > 3) {
-              return '最多支持三位小数';
+              return i18n('Please enter up to 3 decimals');
             }
           }
           return true;
@@ -357,15 +400,23 @@ export default {
   },
   mounted() {
     this.init();
+    window.addEventListener('changeLocale', this.init);
   },
   methods: {
     async init() {
+      this.carriers = [];
+      this.countries = [];
+      this.enabled_departure_countries = [];
       this.user = this.$store.state.user;
+      if (this.user.is_user && this.user.departure_country) {
+        this.departure_country = this.user.departure_country;
+      }
       try {
         const { data } = await req(URL.getCarriersAndCountries);
         const carriers = data.result.carrier,
           countries = data.result.country,
           eu_countries = data.result.eu_country;
+        this.enabled_departure_countries_iso3 = data.result.enabled_departure_countries;
         carriers.forEach(el => {
           this.carriers.push({
             text: el.carrier_name,
@@ -374,9 +425,15 @@ export default {
         });
         countries.forEach(el => {
           this.countries.push({
-            text: `${el.country_name_cn} (${el.country_name_en})`,
+            text: `${el.country_name_localized} (${el.country_name_en})`,
             val: el.iso3,
           });
+          if (this.enabled_departure_countries_iso3.indexOf(el.iso3) > -1) {
+            this.enabled_departure_countries.push({
+              text: `${el.country_name_localized} (${el.country_name_en})`,
+              val: el.iso3,
+            });
+          }
         });
         this.eu_countries = eu_countries;
       } catch (err) {
@@ -390,6 +447,7 @@ export default {
       return {
         sensitivity_type: this.selected_sensitivity_type,
         country: this.selected_country,
+        departure_country: this.departure_country,
         weight: this.weight,
         value: this.value,
       };
@@ -427,6 +485,9 @@ export default {
         this.$refs.captcha.captcha_dialog = false;
         this.$refs.captcha.captcha_value = '';
         const result = data.result;
+        const getRange = (start, end) => {
+          return ci18n('time range', '{%1=start number} ~ {%2=end number} days', start, end);
+        };
         result.forEach(el => {
           this.channels.push({
             local_name: el.local_name,
@@ -442,8 +503,8 @@ export default {
             message: el.message,
             delivery_ttd:
               el.ttd_50pct_in_90 && el.ttd_90pct_in_90
-                ? parseInt(el.ttd_50pct_in_90) + '~' + parseInt(el.ttd_90pct_in_90) + '天'
-                : '暂无数据',
+                ? getRange(parseInt(el.ttd_50pct_in_90), parseInt(el.ttd_90pct_in_90))
+                : ci18n('Data not available', 'N/A'),
             delivered_in_15_rate: el.delivered_in_15_rate ? (el.delivered_in_15_rate * 100).toFixed(2) + '%' : '--',
             delivered_in_30_rate: el.delivered_in_30_rate ? (el.delivered_in_30_rate * 100).toFixed(2) + '%' : '--',
             delivered_in_45_rate: el.delivered_in_45_rate ? (el.delivered_in_45_rate * 100).toFixed(2) + '%' : '--',
@@ -459,7 +520,7 @@ export default {
         this.searching = false;
         this.$wt.notify({
           type: 'error',
-          message: this.i18n(err.message),
+          message: err.message,
         });
       }
     },
@@ -551,6 +612,9 @@ export default {
 }
 .wt-btn-disabled {
   color: #bfcdd4;
+}
+.sort-btn {
+  text-transform: none !important;
 }
 ::v-deep .wt-select-tags {
   .wt-select-tags-ul {

@@ -30,8 +30,10 @@
   </v-dialog>
 </template>
 <script>
+import i18nMixin from '@utils/i18nMixin';
 export default {
   name: 'captcha',
+  mixins: [i18nMixin],
   data: () => ({
     captcha_dialog: false,
     submitLoading: false,

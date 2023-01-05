@@ -6,7 +6,6 @@ const NODE_ENV = process.env.NODE_ENV || 'development';
 const path = require('path');
 log('APP_NAME: ', APP_NAME);
 log('NODE_ENV: ', NODE_ENV);
-
 const publicPathDev = `/m/static/${PARENT_Name}/${APP_NAME}/`;
 const publicPathProd = `https://cdn-qa.infra.wish-cn.com/m/static/${PARENT_Name}/${APP_NAME}/`;
 module.exports = {
@@ -48,6 +47,15 @@ module.exports = {
     //     .filename('main.js')
     //     .chunkFilename('[name].[chunkhash:8].js')
     // }
+    config.plugin('i18nPlugin').use(
+      new webpack.ProvidePlugin({
+        i18n: ['i18nModule', 'i18n'],
+        ni18n: ['i18nModule', 'ni18n'],
+        ci18n: ['i18nModule', 'ci18n'],
+        cni18n: ['i18nModule', 'cni18n'],
+        // sprintf: ['@i18nModule', 'sprintf'],
+      }),
+    );
     const { VuetifyLoaderPlugin } = require('vuetify-loader');
     config
       .plugin('VuetifyLoaderPlugin')
@@ -63,7 +71,7 @@ module.exports = {
       ]);
   },
   configureWebpack: {
-    //支持jquery
+    // 支持jquery
     plugins: [
       new webpack.ProvidePlugin({
         $: 'jquery',
@@ -79,6 +87,7 @@ module.exports = {
         '@views': path.resolve(__dirname, 'src/views'),
         '@utils': path.resolve(__dirname, 'src/utils'),
         '@common': path.resolve(__dirname, 'src/common'),
+        i18nModule: path.resolve(__dirname, 'node_modules/@wish/fe-utils/util/i18n.js'),
       },
     },
   },

@@ -25,6 +25,7 @@ export default {
     async getUserInfo() {
       const { data } = await req('/api/get-user');
       if (data.user) {
+        this.$store.state.user = data.user;
         this.$router.push('/');
       }
     },

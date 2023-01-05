@@ -1,0 +1,23 @@
+
+	{
+		"name": "@ContextLogic/wp_logistics_products_strings",
+		"version": "0.0.1672589111",
+		"description": "translations for wishpost_logistics_products project",
+		"dependencies": {},
+		"devDependencies": {},
+		"scripts": {},
+		"keywords": [
+			"i18n",
+			"translations"
+		],
+		"repository": {
+			"type": "git",
+			"url": "git+https://github.com/ContextLogic/strings.git"
+		},
+		"author": "Localization Eng",
+		"license": "ISC",
+		"bugs": {
+			"url": "https://github.com/ContextLogic/strings/issues"
+		},
+		"homepage": "https://github.com/ContextLogic/strings#readme"
+	}

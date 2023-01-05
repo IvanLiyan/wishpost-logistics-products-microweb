@@ -106,7 +106,7 @@
               :label="item.name"
             />
           </wt-select>
-          <wt-input v-model="search.id_value" :label="getFieldNames"></wt-input>
+          <wt-input v-model="search.id_value" :label="getFieldNames()"></wt-input>
         </div>
         <v-row>
           <v-col>
@@ -312,12 +312,15 @@
 </template>
 <script>
 import req from '@utils/request';
+import i18nMixin from '@utils/i18nMixin';
 import URL from './url';
 import { getOrderStateGroup } from './meta';
 import updatePickupService from './updatePickupService';
 export default {
   name: 'orderList',
   components: { updatePickupService },
+  // use i18nMixin for vue component template use i18n function without define
+  mixins: [i18nMixin],
   props: {
     role: { type: String, default: 'user' },
     tab: { type: String, default: null },
@@ -359,9 +362,9 @@ export default {
         channels: [],
         order_states: [],
         id_field_names: [
-          { field_name: 'tracking_id', name: this.i18n('Tracking Number') },
-          { field_name: 'wish_standard_tracking_id', name: this.i18n('WishPost Order ID') },
-          { field_name: 'wish_transaction_id', name: this.i18n('Wish Order ID') },
+          { field_name: 'tracking_id', name: i18n('Tracking Number') },
+          { field_name: 'wish_standard_tracking_id', name: i18n('WishPost Order ID') },
+          { field_name: 'wish_transaction_id', name: i18n('Wish Order ID') },
         ],
         cancel_category_list: [],
         cancel_reason_list: [],
@@ -389,36 +392,6 @@ export default {
       show_group_tab: false,
     };
   },
-  computed: {
-    getFieldNames() {
-      let result = '';
-      if (this.search.id_field_obj) {
-        switch (this.search.id_field_obj) {
-          case 'tracking_id':
-            result = this.i18n('Tracking Number');
-            break;
-          case 'wish_standard_tracking_id':
-            result = this.i18n('WishPost Order ID');
-            break;
-          case 'wish_transaction_id':
-            result = this.i18n('Wish Order ID');
-            break;
-          case 'user_id':
-            result = this.i18n('User ID');
-            break;
-          case 'username':
-            result = this.i18n('Username');
-            break;
-          default:
-            result = '';
-            break;
-        }
-        return result;
-      } else {
-        return result;
-      }
-    },
-  },
   watch: {
     options: {
       handler() {
@@ -429,24 +402,24 @@ export default {
   },
   mounted() {
     this.headers = [
-      { text: this.i18n('WOSP Order ID'), value: 'wish_standard_tracking_id' },
+      { text: i18n('WOSP Order ID'), value: 'wish_standard_tracking_id' },
       { text: '', value: 'refund_guarantee' },
-      { text: this.i18n('Tracking ID'), value: 'tracking_id' },
-      { text: this.i18n('物流状态'), value: 'tracking_status', width: '120' },
-      { text: this.i18n('状态'), value: 'order_state', width: '80' },
+      { text: i18n('Tracking ID'), value: 'tracking_id' },
+      { text: i18n('物流状态'), value: 'tracking_status', width: '120' },
+      { text: i18n('状态'), value: 'order_state', width: '80' },
       { text: '', value: 'order_state_info' },
-      { text: this.i18n('渠道号'), value: 'parent_channel' },
+      { text: i18n('渠道号'), value: 'parent_channel' },
     ];
     const admin_extra_elements = [];
     if (this.role == 'admin') {
-      admin_extra_elements.push({ text: this.i18n('实际渠道'), value: 'channel' });
-      this.meta.id_field_names.push({ field_name: 'user_id', name: this.i18n('User ID') });
-      this.meta.id_field_names.push({ field_name: 'username', name: this.i18n('Username') });
+      admin_extra_elements.push({ text: i18n('实际渠道'), value: 'channel' });
+      this.meta.id_field_names.push({ field_name: 'user_id', name: i18n('User ID') });
+      this.meta.id_field_names.push({ field_name: 'username', name: i18n('Username') });
     }
     this.headers = this.headers.concat(admin_extra_elements, [
-      { text: this.i18n('收件人'), value: 'receiver_name' },
-      { text: this.i18n('创建时间'), value: 'created_time', width: '120' },
-      { text: this.i18n('Action'), value: 'action', width: '100' },
+      { text: i18n('收件人'), value: 'receiver_name' },
+      { text: i18n('创建时间'), value: 'created_time', width: '120' },
+      { text: i18n('Action'), value: 'action', width: '100' },
     ]);
     this.datePicker.push(this.$moment().add(-1, 'hours').toDate());
     this.datePicker.push(this.$moment().toDate());
@@ -459,7 +432,34 @@ export default {
     }
   },
   methods: {
-    show() {},
+    getFieldNames() {
+      let result = '';
+      if (this.search.id_field_obj) {
+        switch (this.search.id_field_obj) {
+          case 'tracking_id':
+            result = i18n('Tracking Number');
+            break;
+          case 'wish_standard_tracking_id':
+            result = i18n('WishPost Order ID');
+            break;
+          case 'wish_transaction_id':
+            result = i18n('Wish Order ID');
+            break;
+          case 'user_id':
+            result = i18n('User ID');
+            break;
+          case 'username':
+            result = i18n('Username');
+            break;
+          default:
+            result = '';
+            break;
+        }
+        return result;
+      } else {
+        return result;
+      }
+    },
     getOrderLink(item) {
       const path = this.role == 'user' ? '/home/#/user/order/' : '/order-information?order_id=';
       return path + item.order_id;
@@ -492,7 +492,7 @@ export default {
               this.exporting = false;
               this.$wt.notify({
                 type: 'error',
-                message: this.i18n('导出成功'),
+                message: i18n('导出成功'),
               });
               clearInterval(this.check_export_interval);
             } else if (time_remaining < 0) {
@@ -500,7 +500,7 @@ export default {
               this.exporting = false;
               this.$wt.notify({
                 type: 'error',
-                message: this.i18n('下载失败请稍后再试'),
+                message: i18n('下载失败请稍后再试'),
               });
             }
           }.bind(this),
@@ -600,7 +600,7 @@ export default {
       ) {
         this.$wt.notify({
           type: 'error',
-          message: this.i18n('请选择/填写取消原因'),
+          message: i18n('请选择/填写取消原因'),
         });
         return;
       }
@@ -622,7 +622,7 @@ export default {
         this.cancel_loading = false;
         this.$wt.notify({
           type: 'success',
-          message: this.i18n('取消成功'),
+          message: i18n('取消成功'),
         });
         this.searchOrders();
         this.show_cancel_dialog = false;
@@ -663,12 +663,12 @@ export default {
         const { data } = await req(URL.getCancelOrderReasonCategoryList);
         this.meta.cancel_category_list.push({
           id: null,
-          name: this.i18n('请选择'),
+          name: i18n('请选择'),
         });
         this.meta.cancel_category_list = this.meta.cancel_category_list.concat(data);
         this.meta.cancel_category_list.push({
           id: this.meta.cancel_category_customized_id,
-          name: this.i18n('以上都不是'),
+          name: i18n('以上都不是'),
         });
       } catch (err) {
         this.$wt.notify({
@@ -681,7 +681,7 @@ export default {
       if (!this.selected_orders.length) {
         this.$wt.notify({
           type: 'error',
-          message: this.i18n('请选择订单'),
+          message: i18n('请选择订单'),
         });
         return;
       }

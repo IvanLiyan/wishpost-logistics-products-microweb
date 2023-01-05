@@ -47,11 +47,12 @@
   </v-row>
 </template>
 <script>
-// import '@css/global.css';
-// import { i18n } from '@vuei18n/i18n';
+import i18nMixin from '@utils/i18nMixin';
 import s3 from '../utils/s3';
 export default {
   name: 'uploadFileView',
+  // use i18nMixin for vue component template use i18n function without define
+  mixins: [i18nMixin],
   props: {
     disabled: {
       type: Boolean,
@@ -345,7 +346,7 @@ export default {
         }
       };
       if (!filename) {
-        var resp = { msg: this.i18n('Please choose a file.') };
+        var resp = { msg: i18n('Please choose a file.') };
         failure(resp, undefined);
         return;
       }

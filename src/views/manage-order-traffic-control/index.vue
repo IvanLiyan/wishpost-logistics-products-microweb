@@ -301,34 +301,37 @@
 </template>
 <script>
 import uploadFileView from '@component/uploadFileView';
+import i18nMixin from '@utils/i18nMixin';
 import req from '@utils/request';
 import URL from './url';
 export default {
   name: 'manageOrderTrafficControl',
   components: { uploadFileView },
+  // use i18nMixin for vue component template use i18n function without define
+  mixins: [i18nMixin],
   data: function () {
     return {
       // Table.
       loading: true,
       headers: [
-        { text: this.i18n('WOSP Service'), value: 'wosp_name', sortable: true },
-        { text: this.i18n('Shipping Product'), value: 'shipping_product_name', sortable: false },
-        { text: this.i18n('Country'), value: 'country_name', sortable: true },
-        { text: this.i18n('Warehouse'), value: 'warehouse_name', sortable: false },
+        { text: i18n('WOSP Service'), value: 'wosp_name', sortable: true },
+        { text: i18n('Shipping Product'), value: 'shipping_product_name', sortable: false },
+        { text: i18n('Country'), value: 'country_name', sortable: true },
+        { text: i18n('Warehouse'), value: 'warehouse_name', sortable: false },
         {
-          text: this.i18n('Max Count'),
+          text: i18n('Max Count'),
           value: 'max_cnt',
           sortable: true,
-          tooltip: this.i18n('Max count will refresh every 15 minutes.'),
+          tooltip: i18n('Max count will refresh every 15 minutes.'),
         },
         {
-          text: this.i18n('Current Count'),
+          text: i18n('Current Count'),
           value: 'current_cnt',
           sortable: true,
-          tooltip: this.i18n('Current count will refresh every 5 minutes.'),
+          tooltip: i18n('Current count will refresh every 5 minutes.'),
         },
-        { text: this.i18n('Last Updated Time'), value: 'last_updated_time', sortable: false },
-        { text: this.i18n('Actions'), value: 'action', sortable: false },
+        { text: i18n('Last Updated Time'), value: 'last_updated_time', sortable: false },
+        { text: i18n('Actions'), value: 'action', sortable: false },
       ],
       item_per_page: 20,
       rows: [],
@@ -419,7 +422,7 @@ export default {
         const default_opt = [
           {
             id: 'None',
-            name: this.i18n('All'),
+            name: i18n('All'),
           },
         ];
         const self = this;
@@ -454,7 +457,7 @@ export default {
       this.modify_dialog.loading = true;
       this.modify_dialog.msg = '';
       if (!this._validatePhab()) {
-        this.modify_dialog.msg = this.i18n('请填写所有信息');
+        this.modify_dialog.msg = i18n('请填写所有信息');
       }
       const { country, wosp_id, shipping_product_id, max_cnt, warehouse } = this.modify_dialog;
       const params = {
@@ -471,7 +474,7 @@ export default {
         console.log(data);
         this.$wt.notify({
           type: 'success',
-          message: this.i18n('成功！请到物流工具包->管理物流事件中审批激活！'),
+          message: i18n('成功！请到物流工具包->管理物流事件中审批激活！'),
         });
         this.modify_dialog.loading = false;
         this.modify_dialog.show = false;
@@ -497,7 +500,7 @@ export default {
       //     () => {
       //       this.noty({
       //         type: 'success',
-      //         text: this.i18n('成功！请到物流工具包->管理物流事件中审批激活！'),
+      //         text: i18n('成功！请到物流工具包->管理物流事件中审批激活！'),
       //       });
       //       this.modify_dialog.loading = false;
       //       this.modify_dialog.show = false;
@@ -515,7 +518,7 @@ export default {
       if (is_edit) {
         Object.assign(this.modify_dialog, {
           is_edit: true,
-          title: this.i18n('Edit'),
+          title: i18n('Edit'),
           max_cnt: item.max_cnt,
           wosp_id: item.wosp_id,
           country: item.country_iso2_code,
@@ -525,7 +528,7 @@ export default {
       } else {
         Object.assign(this.modify_dialog, {
           is_edit: false,
-          title: this.i18n('Create'),
+          title: i18n('Create'),
           wosp_id: null,
           shipping_product_id: 'None',
           country: null,
@@ -549,11 +552,11 @@ export default {
       this.batch_add_dialog.msg = '';
       const url = this.getUploadFileUrl();
       if (!url) {
-        this.batch_add_dialog.msg = this.i18n('请上传文件');
+        this.batch_add_dialog.msg = i18n('请上传文件');
         return;
       }
       if (!this._validatePhab()) {
-        this.batch_add_dialog.msg = this.i18n('请填写所有信息');
+        this.batch_add_dialog.msg = i18n('请填写所有信息');
         return;
       }
       this.batch_add_dialog.loading = true;
@@ -567,7 +570,7 @@ export default {
         console.log(data);
         this.$wt.notify({
           type: 'success',
-          message: this.i18n('成功！请到物流工具包->管理物流事件中审批激活！'),
+          message: i18n('成功！请到物流工具包->管理物流事件中审批激活！'),
         });
         this.batch_add_dialog.show = false;
         this.batch_add_dialog.loading = false;
@@ -588,7 +591,7 @@ export default {
       //     () => {
       //       this.noty({
       //         type: 'success',
-      //         text: this.i18n('成功！请到物流工具包->管理物流事件中审批激活！'),
+      //         text: i18n('成功！请到物流工具包->管理物流事件中审批激活！'),
       //       });
       //       this.batch_add_dialog.show = false;
       //       this.batch_add_dialog.loading = false;
@@ -607,7 +610,7 @@ export default {
       if (!file) {
         this.$wt.notify({
           type: 'error',
-          message: this.i18n('Please choose a file.'),
+          message: i18n('Please choose a file.'),
         });
         return;
       }
@@ -631,7 +634,7 @@ export default {
     },
     saveDeleteDialog() {
       if (!this._validatePhab()) {
-        this.delete_dialog.msg = this.i18n('请填写所有信息');
+        this.delete_dialog.msg = i18n('请填写所有信息');
         return;
       }
       this.deleteItem();
@@ -651,7 +654,7 @@ export default {
         this.delete_dialog.show = false;
         this.$wt.notify({
           type: 'success',
-          message: this.i18n('成功！请到物流工具包->管理物流事件中审批激活！'),
+          message: i18n('成功！请到物流工具包->管理物流事件中审批激活！'),
         });
       } catch (err) {
         this.$wt.notify({
@@ -670,7 +673,7 @@ export default {
       //       this.delete_dialog.show = false;
       //       this.noty({
       //         type: 'success',
-      //         text: this.i18n('成功！请到物流工具包->管理物流事件中审批激活！'),
+      //         text: i18n('成功！请到物流工具包->管理物流事件中审批激活！'),
       //       });
       //     },
       //     err => {

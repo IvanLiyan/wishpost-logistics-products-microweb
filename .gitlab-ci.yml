@@ -1,0 +1,84 @@
+###########################################################################
+##                    WISHPOST LOGISTICS PRODUCTS CI PIPELINE - Main File (US)              ##
+###########################################################################
+##                                                                       ##
+## Main configuration files for the wishpost CI Pipeline. Only the prod- ##
+## related jobs and globals should appear into that file.                ##
+## If you have any question, feel free to contact us on slack - #gitlab  ##
+##                                                                       ##
+## Gitlab CI Documentation:                                              ##
+## https://docs.gitlab.com/ee/ci/yaml/                                   ##
+##                                                                       ##
+###########################################################################
+
+#####################
+## START TEMPLATES ##
+#####################
+
+stages:
+  - schedule
+
+include:
+  - project: 'contextlogic/includes-cn'
+    ref: master
+    file: '/templates/job-sonar/default.yml'
+    rules:
+      - if: $CI_PIPELINE_SOURCE == "schedule" && $SCHEDULE_TYPE == "daily"
+  - project: 'contextlogic/includes-cn'
+    ref: master
+    file: '/templates/job-js-lint/default.yml'
+    rules:
+      - if: $CI_PIPELINE_SOURCE == "external_pull_request_event"
+
+.git_credentials_setup_script: &git_credentials_setup_script |
+  mkdir /root/.ssh/ && touch /root/.ssh/id_rsa
+  echo $GITHUB_DEPLOY_KEY | base64 -di > /root/.ssh/id_rsa
+  git config --global user.email "wishpost-i18n-bot@wish.com"
+  git config --global user.name "Wishpost I18N Bot"
+  if [[ $(git remote) == *"github"* ]]; then
+    git remote set-url github git@github.com:ContextLogic/wishpost-logistics-products-microweb.git
+  else
+    git remote add github git@github.com:ContextLogic/wishpost-logistics-products-microweb.git
+  fi
+  chmod 700 /root/.ssh/id_rsa
+  ssh-keyscan -t rsa github.com >> /root/.ssh/known_hosts
+
+schedule:wishpost_string_to_i18n_backend:
+  stage: schedule
+  image: $CI_REGISTRY/contextlogic/strings:latest_v2
+  script:
+    - export WP_HOME=$(pwd)
+    - START_TIME=$SECONDS
+    - mv extract.ts /go/src/github.com/ContextLogic/strings/domain/javascript/extract.ts
+    - cd /go/src/github.com/ContextLogic/strings/domain/javascript/
+    - yarn add vue-template-compiler
+    - /go/bin/strings extract $WP_HOME --client-id="${CLIENT_ID}" --client-secret="${CLIENT_SECRET}" --rate-limit=20 --concurrency=60 --repo-name="wishpost-logistics-products-microweb"
+    - echo 'wish_string_to_i18n_backend_runtime_seconds' $((SECONDS-START_TIME)) | curl --data-binary @- http://pushgateway.infra.wish.com:9091/metrics/job/gitlab
+    # push prometheus metricj
+    - echo 'wish_string_to_i18n_backend_last_success_timestamp' $(date -u +%s) | curl --data-binary @- http://pushgateway.infra.wish.com:9091/metrics/job/gitlab
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule" && $SCHEDULE=="wishpost_logistics_products_string_to_i18n_backend"'
+  artifacts:
+    when: on_failure
+    paths:
+      - i18n_artifacts
+
+schedule:wishpost_string_build_from_i18n_backend:
+  # variables:
+  #   MEMORY_PROFILE_OUTPUT_PATH: /builds/ContextLogic/clroot/sweeper/merchant_dashboard/_strings_mem_profile_/memprofile.prof
+  stage: schedule
+  image: $CI_REGISTRY/contextlogic/strings:latest_v2
+  script:
+    - START_TIME=$SECONDS
+    # setup git credentials
+    - *git_credentials_setup_script
+    - export WP_HOME=$(pwd)
+    - ls /tmp
+    - sh $WP_HOME/localization_sync.sh
+    - echo 'wishpost_string_build_from_i18n_backend_runtime_seconds' $((SECONDS-START_TIME)) | curl --data-binary @- http://pushgateway.infra.wish.com:9091/metrics/job/gitlab
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule" && $SCHEDULE=="wishpost_logistics_products_string_build_from_i18n_backend"'
+  artifacts:
+    when: on_failure
+    paths:
+      - translation_packages/js

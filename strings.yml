@@ -1,0 +1,54 @@
+project:
+  name: wishpost_logistics_products
+
+smartling:
+  project_name: WishPost
+
+lint: # By default, the following optional lint rules are not enabled. The linter will only check for issues that will hard-fail the pipeline
+  # strict_categorization: # Enforce that all files i18n calls within the specified dirs must be included in a feature in a manifest file.
+  #   files: # List of dirs/files in which to enforce strict categorization
+  #     - sweeper/*.py
+  #     - sweeper/*.js
+  #   ignore: # List of dirs/files to ignore for strict categorization
+  #     - sweeper/admin_only_files/*.py
+  invalid_args: true # Do not allow variables and constants to be passed into i18n. Only allow string-literals.
+  # disable_invalid_placeholder: true # Only apply linter rule for checking invalid placeholders on newly added files.
+  # untranslatable_strings: true # Do not allow strings that don't have any english words, for example: `i18n("这是一句话c")`, `i18n("%1$s - %2$s")`
+
+# Configurations for extraction of strings from codebase
+extraction:
+  custom_filetypes: # Mapping custom file endings to the appropriate extractor.
+    javascript: # File types with javascript (By default, ['.js', '.jsx', '.ts', '.tsx'] types are extracted using javascript)
+      - '*.vue'
+  disallow_jsx_inference: false # Don't allow JSX inferences during extraction. Default is false
+
+# Configurations for translation package builder
+package:
+  #   # List of features that will be included in the translation package.
+  #   dependent_features:
+  #     - project_name: other_project_name
+  #       name: some_feature_name
+  #     - project_name: another_project_name
+  #       name: another_feature_name
+  #  # List of projects that will be included in the translation package. It will include all features under the projects.
+  #   dependent_projects:
+  #     - some_project_name
+  #     - another_project_name
+  platforms:
+    javascript:
+      package_name: wp_logistics_products_strings # Name for JS translation package
+
+features:
+  - name: Wishpost Logistics Products
+    owners:
+      - gaomo@wish.com
+    product_manager: stian@wish.com
+    files:
+      - src/views/advisor-tool/*.vue
+      # - src/views/handover/manage-bag-services/*.vue
+      # - src/views/handover/search-handover/*.vue
+      # - src/views/manage-order-traffic-control/*.vue
+      # - src/views/orders/*.vue
+
+    description: >
+      Wishpost Logistics Products related pages like advisor-tool, manage-order-traffic-control info.
