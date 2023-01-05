@@ -3,7 +3,7 @@
     <v-card class="mb-4">
       <v-card-text>
         <div class="search-row" style="max-width: 1200px">
-          <wt-select
+          <!-- <wt-select
             width="240"
             :filterable="true"
             class="mr"
@@ -17,8 +17,23 @@
               :value="item.iso2"
               :label="getCountryText(item)"
             />
-          </wt-select>
-          <wt-select
+          </wt-select> -->
+          <div style="width: 240px; margin-right: 20px; padding-top: 5px">
+            <v-autocomplete
+              v-model="search.countries"
+              :items="meta.countries"
+              outlined
+              dense
+              clearable
+              :item-text="getCountryText"
+              item-value="iso2"
+              hide-details="true"
+              width="240px"
+              multiple
+              :label="i18n('Country')"
+            ></v-autocomplete>
+          </div>
+          <!-- <wt-select
             width="240"
             class="mr"
             v-model="search.parent_channels"
@@ -32,7 +47,22 @@
               :value="item.code"
               :label="getChannelText(item)"
             />
-          </wt-select>
+          </wt-select> -->
+          <div style="width: 240px; margin-right: 20px; padding-top: 5px">
+            <v-autocomplete
+              v-model="search.parent_channels"
+              :items="meta.channels"
+              outlined
+              dense
+              clearable
+              multiple
+              width="240"
+              :item-text="getChannelText"
+              item-value="code"
+              hide-details="true"
+              :label="i18n('Channel')"
+            ></v-autocomplete>
+          </div>
           <div v-if="role == 'admin'">
             <wt-select
               width="240"
