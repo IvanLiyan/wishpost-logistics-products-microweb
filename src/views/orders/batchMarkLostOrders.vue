@@ -274,17 +274,6 @@ export default {
   },
   methods: {
     async initParams() {
-      // this.api.getCancelOrderReasonCategoryList().then(res => {
-      //   this.cancel_category_list.push({
-      //     id: null,
-      //     name: this.i18n('请选择'),
-      //   });
-      //   this.cancel_category_list = this.cancel_category_list.concat(res.data);
-      //   this.cancel_category_list.push({
-      //     id: this.cancel_category_customized_id,
-      //     name: this.i18n('以上都不是'),
-      //   });
-      // });
       try {
         const { data } = await req(URL.getCancelOrderReasonCategoryList);
         this.cancel_category_list.push({
@@ -307,7 +296,7 @@ export default {
       const params = {
         'category[]': this.category,
       };
-      if (this.id_field_obj && this.tracking_ids) {
+      if (this.id_field_obj && this.tracking_ids.length > 0) {
         const trackings = this.tracking_ids.split(/\s+/);
         params[this.id_field_obj.field_name] = trackings;
       }
@@ -317,19 +306,6 @@ export default {
       this.loading = false;
       const params = this.getParams();
       this.loading = true;
-      // this.api.searchOrderRequest(params).then(
-      //   res => {
-      //     this.loading = false;
-      //     this.result = res.data.result;
-      //   },
-      //   err => {
-      //     this.loading = false;
-      //     this.$wt.notify({
-      //       type: 'error',
-      //       message: err.msg,
-      //     });
-      //   },
-      // );
       try {
         const { data } = await req(URL.searchOrderRequest, params);
         this.loading = false;
@@ -343,7 +319,6 @@ export default {
       }
     },
     updateCancelOrderCategory() {
-      console.log(333, this.cancel_reason_obj.category);
       this.cancel_reason_obj.reason = null;
       this.cancel_reason_list = this.cancel_category_list.find(
         entry => entry.id == this.cancel_reason_obj.category,
@@ -366,23 +341,6 @@ export default {
         lost_type: this.lost_type,
         ticket: this.ticket,
       };
-      // this.api.markLostOrders(params).then(
-      //   res => {
-      //     this.upload_batch_mark_lost = false;
-      //     this.batch_mark_lost = false;
-      //     this.loading = false;
-      //     this.result = res.data.result;
-      //   },
-      //   err => {
-      //     this.loading = false;
-      //     this.$wt.notify({
-      //       type: 'error',
-      //       message: err.msg,
-      //     });
-      //     this.upload_batch_mark_lost = false;
-      //     this.batch_mark_lost = false;
-      //   },
-      // );
       try {
         const { data } = await req(URL.markLostOrders, params);
         this.upload_batch_mark_lost = false;
@@ -424,38 +382,6 @@ export default {
         cancel_reason_code: this.cancel_reason_obj.reason ? this.cancel_reason_obj.reason.code : null,
         ticket: this.ticket,
       };
-      // this.api.batchInvalidateOrder(params).then(
-      //   res => {
-      //     this.result = [];
-      //     this.loading = false;
-      //     const result_dict = res.data;
-      //     Object.keys(result_dict).forEach(entry => {
-      //       const results = result_dict[entry];
-      //       results.forEach(el => {
-      //         this.result.push({
-      //           tracking_id: el.tracking_id,
-      //           wish_standard_tracking_id: el.wish_standard_tracking_id,
-      //           message: el.message,
-      //           ticket: el.ticket,
-      //           state: el.state,
-      //           category: el.category,
-      //           last_updated_time: el.last_updated_time,
-      //         });
-      //       });
-      //     });
-      //     this.upload_batch_cancel_order = false;
-      //     this.batch_cancel_order = false;
-      //   },
-      //   err => {
-      //     this.loading = false;
-      //     this.$wt.notify({
-      //       type: 'error',
-      //       message: err.msg,
-      //     });
-      //     this.upload_batch_cancel_order = false;
-      //     this.batch_cancel_order = false;
-      //   },
-      // );
       try {
         const { data } = await req(URL.batchInvalidateOrder, params);
         this.result = [];
@@ -517,25 +443,6 @@ export default {
       }
       const trackings = this.tracking_ids.split(/\s+/);
       this.loading = true;
-      // this.api
-      //   .markLostOrders({
-      //     tracking_ids: trackings,
-      //     lost_type: this.lost_type,
-      //     ticket: this.ticket,
-      //   })
-      //   .then(
-      //     res => {
-      //       this.loading = false;
-      //       this.result = res.data.result;
-      //     },
-      //     err => {
-      //       this.loading = false;
-      //       this.$wt.notify({
-      //         type: 'error',
-      //         message: err.msg,
-      //       });
-      //     },
-      //   );
       try {
         const { data } = await req(URL.markLostOrders, {
           tracking_ids: trackings,
@@ -574,35 +481,6 @@ export default {
         cancel_reason_code: this.cancel_reason_obj.reason ? this.cancel_reason_obj.reason.code : null,
         ticket: this.ticket,
       };
-      // this.api.batchInvalidateOrder(params).then(
-      //   res => {
-      //     this.result = [];
-      //     this.loading = false;
-      //     const result_dict = res.data;
-      //     Object.keys(result_dict).forEach(entry => {
-      //       const results = result_dict[entry];
-      //       results.forEach(el => {
-      //         this.result.push({
-      //           tracking_id: el.tracking_id,
-      //           wish_standard_tracking_id: el.wish_standard_tracking_id,
-      //           message: el.message,
-      //           ticket: el.ticket,
-      //           state: el.state,
-      //           category: el.category,
-      //           last_updated_time: el.last_updated_time,
-      //         });
-      //       });
-      //     });
-      //     this.cancel_order = false;
-      //   },
-      //   err => {
-      //     this.cancel_loading = false;
-      //     this.$wt.notify({
-      //       type: 'error',
-      //       message: err.msg,
-      //     });
-      //   },
-      // );
       try {
         const { data } = await req(URL.batchInvalidateOrder, params);
         this.result = [];
