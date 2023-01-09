@@ -630,7 +630,7 @@ export default {
         this.cancel_loading = false;
         this.$wt.notify({
           type: 'error',
-          message: err.msg,
+          message: err.message,
         });
       }
     },

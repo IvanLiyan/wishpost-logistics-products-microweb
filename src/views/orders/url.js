@@ -8,4 +8,6 @@ export default {
   getCancelOrderReasonCategoryList: '/api/cancel_order_reason/get-category-list',
   confirmCollectionOption: '/api/v3/order/collection_option/confirm',
   getTempAccessToken: '/api/oauth/temp-access-token',
+  searchOrderRequest: '/api/order-request/search',
+  markLostOrders: '/api/order/mark-lost',
 };

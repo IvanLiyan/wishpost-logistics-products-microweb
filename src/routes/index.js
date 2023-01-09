@@ -46,4 +46,13 @@ export default [
         '@views/orders/index'
       ),
   },
+  {
+    path: `${APP_NAME}/mark-lost-orders`,
+    name: `${APP_NAME}.mark-lost-orders`,
+    component: () =>
+      import(
+        /* webpackChunkName: "mark-lost-orders" */
+        '@views/orders/batchMarkLostOrders'
+      ),
+  },
 ];
