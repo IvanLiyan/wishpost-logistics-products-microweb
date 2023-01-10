@@ -33,7 +33,7 @@ export default {
     label: {
       type: String,
       default: function () {
-        return this.$i18n('上传文件');
+        return this.i18n('上传文件');
       },
     },
   },
