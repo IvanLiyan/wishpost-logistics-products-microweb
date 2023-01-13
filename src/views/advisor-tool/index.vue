@@ -1,266 +1,280 @@
 <template>
-  <div class="user-page">
-    <v-container fluid>
-      <v-container>
-        <captcha ref="captcha"></captcha>
-        <div class="h2 mb-4">{{ i18n('Search Logistics Channel') }}</div>
-        <v-card>
-          <v-container fluid style="padding: 16px">
-            <v-form ref="form" v-model="valid">
-              <div class="search-row">
-                <wt-select
-                  class="mr"
-                  :filterable="true"
-                  v-model="selected_country"
-                  :label="ci18n('Filter Logistics Channel by field', 'Destination')"
-                >
-                  <wt-option v-for="item in countries" :key="item.text" :value="item.val" :label="item.text" />
-                </wt-select>
-                <wt-select
-                  class="mr"
-                  :filterable="true"
-                  v-model="departure_country"
-                  :label="i18n('Country/Region of Departure')"
-                >
-                  <wt-option
-                    v-for="item in enabled_departure_countries"
-                    :key="item.text"
-                    :value="item.val"
-                    :label="item.text"
-                  />
-                </wt-select>
-                <wt-select class="mr" v-model="selected_sensitivity_type" :label="i18n('Product Type')">
-                  <wt-option v-for="item in sensitivityTypes" :key="item.text" :value="item.val" :label="item.text" />
-                </wt-select>
-              </div>
-              <div class="search-row">
-                <span class="text-filed-wrapper" style="width: 260px">
-                  <v-text-field
-                    class="mr"
-                    v-model="value"
-                    :label="i18n('Product Value')"
-                    :prefix="currency"
-                    type="number"
-                    min="0"
-                    max="9999"
-                    outlined
-                    dense
-                  ></v-text-field>
-                </span>
-                <span class="text-filed-wrapper">
-                  <v-text-field
-                    v-model="weight"
-                    :label="i18n('Product Weight')"
-                    suffix="kg"
-                    type="number"
-                    min="0.001"
-                    max="9999"
-                    outlined
-                    :rules="weight_rules"
-                    :hint="i18n('up to 3 decimals, for example 3.435')"
-                    dense
-                  ></v-text-field>
-                </span>
-              </div>
-              <div>
-                <wt-button
-                  class="search-btn"
-                  type="primary"
-                  :loading="searching"
-                  :disabled="isDisabled"
-                  @click="searchWospService"
-                  style="margin-right: 20px"
-                >
-                  {{ i18n('Search') }}
-                </wt-button>
-                <wt-button class="clear-btn" type="secondary" @click="clearSearchFilter">
-                  {{ i18n('Clear') }}
-                </wt-button>
-              </div>
-            </v-form>
-          </v-container>
-        </v-card>
-        <br />
-        <v-card>
-          <v-card-title>
-            <div class="search-row">
-              <div class="search-left">
-                <wt-select
-                  v-model="selected_carriers"
-                  :placeholder="i18n('Logistics carrier')"
-                  :label="i18n('Logistics carrier')"
-                  multiple
-                  :disabled="disableFilter"
-                  class="mr"
-                  :filterable="true"
-                >
-                  <wt-option v-for="item in carriers" :key="item.text" :value="item.val" :label="item.text" />
-                </wt-select>
-                <wt-select
-                  class="mr"
-                  :disabled="disableFilter"
-                  v-model="selected_register"
-                  :label="ci18n('Search Logistics Channel: Tracking Option (provided or not provided)', 'Tracking')"
-                >
-                  <wt-option v-for="item in register_policy" :key="item.text" :value="item.val" :label="item.text" />
-                </wt-select>
-                <wt-select
-                  class="mr"
-                  :disabled="disableFilter"
-                  v-model="selected_limit"
-                  :label="ci18n('Search Logistics Channel: Volume Option (limited or unlimited)', 'Volume')"
-                >
-                  <wt-option v-for="item in limit_policy" :key="item.text" :value="item.val" :label="item.text" />
-                </wt-select>
-                <wt-input class="mr" v-model="search_keyword" :label="i18n('Search')" :placeholder="i18n('Search')">
-                  <wt-icon name="search" slot="suffix" />
-                </wt-input>
-              </div>
-              <div class="search-right">
-                <v-btn
-                  :class="delivery_ttd_sort ? 'blue--text' : 'grey--text'"
-                  class="mr sort-btn"
-                  rounded
-                  small
-                  :color="delivery_ttd_sort ? '#ECF8FD' : '#F9F9F9'"
-                  @click="deliveryTtdSort"
-                  :disabled="disableFilter"
-                >
-                  {{ ci18n('ranking by shipping time', 'Fast shipping time') }}
-                </v-btn>
-                <v-btn
-                  :class="refund_rate_sort ? 'blue--text' : 'grey--text'"
-                  class="mr sort-btn"
-                  rounded
-                  small
-                  :color="refund_rate_sort ? '#ECF8FD' : '#F9F9F9'"
-                  @click="refundRateSort"
-                  :disabled="disableFilter"
-                >
-                  {{ ci18n('ranking by refund rate', 'Low refund rate') }}
-                </v-btn>
-                <v-btn
-                  :class="fee_sort ? 'blue--text' : 'grey--text'"
-                  class="mr sort-btn"
-                  rounded
-                  small
-                  :color="fee_sort ? '#ECF8FD' : '#F9F9F9'"
-                  @click="feeSort"
-                  :disabled="disableFilter"
-                >
-                  {{ ci18n('ranking by price', 'Low price') }}
-                </v-btn>
-              </div>
-            </div>
-          </v-card-title>
-          <v-data-table
-            :headers="headers"
-            :items="filteredChannels"
-            :loading="searching"
-            :loading-text="i18n('Loading... Please wait')"
-            :search="search_keyword"
-            multi-sort
-            disable-sort
-            locale="zh"
-            :items-per-page="items_per_page"
-            :footer-props="{
-              prevIcon: 'keyboard_arrow_left',
-              nextIcon: 'keyboard_arrow_right',
-              itemsPerPageText: i18n('Rows per page'),
-              itemsPerPageOptions: [20, 40, 60],
-            }"
-          >
-            <template v-slot:item.fee="{ item }">
-              <v-col>
-                <v-row>
-                  <span>{{ item.fee }}</span>
-                  <!-- <template v-slot:activator="{ on, attrs }">
-                    <wt-tooltip :content="item.message" placement="top">
-                      <v-icon v-if="!item.success" dense v-bind="attrs" v-on="on" small>mdi-help-circle</v-icon>
-                    </wt-tooltip>
-                  </template> -->
-                  <wt-tooltip v-if="!item.success" :content="item.message" placement="top">
-                    <v-icon dense small style="vertical-align: -10%">mdi-help-circle</v-icon>
-                  </wt-tooltip>
-                </v-row>
-              </v-col>
+  <v-container fluid class="page-content-layout">
+    <captcha ref="captcha"></captcha>
+    <div class="page-component-first-block">
+      <table>
+        <td class="breadcrumb-title-td">
+          <label class="text-2xl mb-6 breadcrumb-title">
+            {{ i18n('Search Logistics Channel') }}
+          </label>
+        </td>
+        <td class="breadcrumb-cell-td">
+          <div width="1" class="vertical-line" />
+        </td>
+        <td class="breadcrumb-cell-td">
+          <v-breadcrumbs :items="getBreadcrumbItems()" class="pa-0">
+            <template v-slot:divider>
+              <v-icon>mdi-chevron-right</v-icon>
             </template>
-            <template v-slot:item.local_name="{ item }">
-              <v-col>
-                <v-row style="margin-top: 1px">
-                  <h3>{{ item.local_name }}</h3>
-                  <v-chip
-                    v-if="item.is_registered"
-                    class="ma-2"
-                    color="#D1EDAF"
-                    text-color="#4E8B05"
-                    style="bottom: 10px"
-                    small
-                  >
-                    {{ i18n('Tracking provided') }}
-                  </v-chip>
-                  <v-chip v-else class="ma-2" color="#FFE6EA" text-color="#A61C32" style="bottom: 10px" small>
-                    {{ i18n('Tracking not provided') }}
-                  </v-chip>
-                  <v-chip
-                    v-if="item.is_limited"
-                    class="ma-2"
-                    color="#EF8D2E"
-                    text-color="white"
-                    style="bottom: 10px"
-                    small
-                  >
-                    {{ ci18n('has volume limits', 'Limited') }}
-                  </v-chip>
-                </v-row>
-                <v-row>
-                  <span class="text-caption">
-                    {{ i18n('Refund rate') }}
-                    <b
-                      :style="{
-                        color: colors[item.refund_rate_in_90_rank - 1],
-                      }"
-                    >
-                      {{ label[item.refund_rate_in_90_rank - 1] }}
-                    </b>
-                  </span>
-                </v-row>
-                <v-row style="margin-bottom: 2px">
-                  <v-progress-linear
-                    :value="item.refund_rate_in_90_rank * 10"
-                    :color="colors[item.refund_rate_in_90_rank - 1]"
-                    background-color="grey"
-                    height="6"
-                    buffer-value="50"
-                  ></v-progress-linear>
-                </v-row>
-              </v-col>
-            </template>
-            <template v-slot:item.delivered_in_15_rate="{ item }">
-              <v-row style="margin-top: 8px">
-                <v-col>
-                  {{ item.delivered_in_15_rate }}
-                  <p style="font-size: 10px" color="#ddd">{{ ci18n('sampled time range', '15 days') }}</p>
-                </v-col>
-                <v-col>
-                  {{ item.delivered_in_30_rate }}
-                  <p style="font-size: 10px" color="#ddd">{{ ci18n('sampled time range', '30 days') }}</p>
-                </v-col>
-                <v-col>
-                  {{ item.delivered_in_45_rate }}
-                  <p style="font-size: 10px" color="#ddd">{{ ci18n('sampled time range', '45 days') }}</p>
-                </v-col>
-                <v-col>
-                  {{ item.delivered_in_60_rate }}
-                  <p style="font-size: 10px" color="#ddd">{{ ci18n('sampled time range', '60 days') }}</p>
-                </v-col>
-              </v-row>
-            </template>
-          </v-data-table>
-        </v-card>
+          </v-breadcrumbs>
+        </td>
+      </table>
+    </div>
+    <v-card class="page-component-block">
+      <v-container fluid style="padding: 16px">
+        <v-form ref="form" v-model="valid">
+          <div class="search-row">
+            <wt-select
+              class="mr"
+              :filterable="true"
+              v-model="selected_country"
+              :label="ci18n('Filter Logistics Channel by field', 'Destination')"
+            >
+              <wt-option v-for="item in countries" :key="item.text" :value="item.val" :label="item.text" />
+            </wt-select>
+            <wt-select
+              class="mr"
+              :filterable="true"
+              v-model="departure_country"
+              :label="i18n('Country/Region of Departure')"
+            >
+              <wt-option
+                v-for="item in enabled_departure_countries"
+                :key="item.text"
+                :value="item.val"
+                :label="item.text"
+              />
+            </wt-select>
+            <wt-select class="mr" v-model="selected_sensitivity_type" :label="i18n('Product Type')">
+              <wt-option v-for="item in sensitivityTypes" :key="item.text" :value="item.val" :label="item.text" />
+            </wt-select>
+          </div>
+          <div class="search-row">
+            <span class="text-filed-wrapper" style="width: 260px">
+              <v-text-field
+                class="mr"
+                v-model="value"
+                :label="i18n('Product Value')"
+                :prefix="currency"
+                type="number"
+                min="0"
+                max="9999"
+                outlined
+                dense
+              ></v-text-field>
+            </span>
+            <span class="text-filed-wrapper">
+              <v-text-field
+                v-model="weight"
+                :label="i18n('Product Weight')"
+                suffix="kg"
+                type="number"
+                min="0.001"
+                max="9999"
+                outlined
+                :rules="weight_rules"
+                :hint="i18n('up to 3 decimals, for example 3.435')"
+                dense
+              ></v-text-field>
+            </span>
+          </div>
+          <div>
+            <wt-button
+              class="search-btn"
+              type="primary"
+              :loading="searching"
+              :disabled="isDisabled"
+              @click="searchWospService"
+              style="margin-right: 20px"
+            >
+              {{ i18n('Search') }}
+            </wt-button>
+            <wt-button class="clear-btn" type="secondary" @click="clearSearchFilter">
+              {{ i18n('Clear') }}
+            </wt-button>
+          </div>
+        </v-form>
       </v-container>
-    </v-container>
-  </div>
+    </v-card>
+    <br />
+    <v-card class="page-component-block">
+      <v-card-title>
+        <div class="search-row">
+          <div class="search-left">
+            <wt-select
+              v-model="selected_carriers"
+              :placeholder="i18n('Logistics carrier')"
+              :label="i18n('Logistics carrier')"
+              multiple
+              :disabled="disableFilter"
+              class="mr"
+              :filterable="true"
+            >
+              <wt-option v-for="item in carriers" :key="item.text" :value="item.val" :label="item.text" />
+            </wt-select>
+            <wt-select
+              class="mr"
+              :disabled="disableFilter"
+              v-model="selected_register"
+              :label="ci18n('Search Logistics Channel: Tracking Option (provided or not provided)', 'Tracking')"
+            >
+              <wt-option v-for="item in register_policy" :key="item.text" :value="item.val" :label="item.text" />
+            </wt-select>
+            <wt-select
+              class="mr"
+              :disabled="disableFilter"
+              v-model="selected_limit"
+              :label="ci18n('Search Logistics Channel: Volume Option (limited or unlimited)', 'Volume')"
+            >
+              <wt-option v-for="item in limit_policy" :key="item.text" :value="item.val" :label="item.text" />
+            </wt-select>
+            <wt-input class="mr" v-model="search_keyword" :label="i18n('Search')" :placeholder="i18n('Search')">
+              <wt-icon name="search" slot="suffix" />
+            </wt-input>
+          </div>
+          <div class="search-right">
+            <v-btn
+              :class="delivery_ttd_sort ? 'blue--text' : 'grey--text'"
+              class="mr sort-btn"
+              rounded
+              small
+              :color="delivery_ttd_sort ? '#ECF8FD' : '#F9F9F9'"
+              @click="deliveryTtdSort"
+              :disabled="disableFilter"
+            >
+              {{ ci18n('ranking by shipping time', 'Fast shipping time') }}
+            </v-btn>
+            <v-btn
+              :class="refund_rate_sort ? 'blue--text' : 'grey--text'"
+              class="mr sort-btn"
+              rounded
+              small
+              :color="refund_rate_sort ? '#ECF8FD' : '#F9F9F9'"
+              @click="refundRateSort"
+              :disabled="disableFilter"
+            >
+              {{ ci18n('ranking by refund rate', 'Low refund rate') }}
+            </v-btn>
+            <v-btn
+              :class="fee_sort ? 'blue--text' : 'grey--text'"
+              class="mr sort-btn"
+              rounded
+              small
+              :color="fee_sort ? '#ECF8FD' : '#F9F9F9'"
+              @click="feeSort"
+              :disabled="disableFilter"
+            >
+              {{ ci18n('ranking by price', 'Low price') }}
+            </v-btn>
+          </div>
+        </div>
+      </v-card-title>
+      <v-data-table
+        :headers="headers"
+        :items="filteredChannels"
+        :loading="searching"
+        :loading-text="i18n('Loading... Please wait')"
+        :search="search_keyword"
+        multi-sort
+        disable-sort
+        locale="zh"
+        :items-per-page="items_per_page"
+        :footer-props="{
+          prevIcon: 'keyboard_arrow_left',
+          nextIcon: 'keyboard_arrow_right',
+          itemsPerPageText: i18n('Rows per page'),
+          itemsPerPageOptions: [20, 40, 60],
+        }"
+      >
+        <template v-slot:item.fee="{ item }">
+          <v-col>
+            <v-row>
+              <span>{{ item.fee }}</span>
+              <!-- <template v-slot:activator="{ on, attrs }">
+                <wt-tooltip :content="item.message" placement="top">
+                  <v-icon v-if="!item.success" dense v-bind="attrs" v-on="on" small>mdi-help-circle</v-icon>
+                </wt-tooltip>
+              </template> -->
+              <wt-tooltip v-if="!item.success" :content="item.message" placement="top">
+                <v-icon dense small style="vertical-align: -10%">mdi-help-circle</v-icon>
+              </wt-tooltip>
+            </v-row>
+          </v-col>
+        </template>
+        <template v-slot:item.local_name="{ item }">
+          <v-col>
+            <v-row style="margin-top: 1px">
+              <h3>{{ item.local_name }}</h3>
+              <v-chip
+                v-if="item.is_registered"
+                class="ma-2"
+                color="#D1EDAF"
+                text-color="#4E8B05"
+                style="bottom: 10px"
+                small
+              >
+                {{ i18n('Tracking provided') }}
+              </v-chip>
+              <v-chip v-else class="ma-2" color="#FFE6EA" text-color="#A61C32" style="bottom: 10px" small>
+                {{ i18n('Tracking not provided') }}
+              </v-chip>
+              <v-chip
+                v-if="item.is_limited"
+                class="ma-2"
+                color="#EF8D2E"
+                text-color="white"
+                style="bottom: 10px"
+                small
+              >
+                {{ ci18n('has volume limits', 'Limited') }}
+              </v-chip>
+            </v-row>
+            <v-row>
+              <span class="text-caption">
+                {{ i18n('Refund rate') }}
+                <b
+                  :style="{
+                    color: colors[item.refund_rate_in_90_rank - 1],
+                  }"
+                >
+                  {{ label[item.refund_rate_in_90_rank - 1] }}
+                </b>
+              </span>
+            </v-row>
+            <v-row style="margin-bottom: 2px">
+              <v-progress-linear
+                :value="item.refund_rate_in_90_rank * 10"
+                :color="colors[item.refund_rate_in_90_rank - 1]"
+                background-color="grey"
+                height="6"
+                buffer-value="50"
+              ></v-progress-linear>
+            </v-row>
+          </v-col>
+        </template>
+        <template v-slot:item.delivered_in_15_rate="{ item }">
+          <v-row style="margin-top: 8px">
+            <v-col>
+              {{ item.delivered_in_15_rate }}
+              <p style="font-size: 10px" color="#ddd">{{ ci18n('sampled time range', '15 days') }}</p>
+            </v-col>
+            <v-col>
+              {{ item.delivered_in_30_rate }}
+              <p style="font-size: 10px" color="#ddd">{{ ci18n('sampled time range', '30 days') }}</p>
+            </v-col>
+            <v-col>
+              {{ item.delivered_in_45_rate }}
+              <p style="font-size: 10px" color="#ddd">{{ ci18n('sampled time range', '45 days') }}</p>
+            </v-col>
+            <v-col>
+              {{ item.delivered_in_60_rate }}
+              <p style="font-size: 10px" color="#ddd">{{ ci18n('sampled time range', '60 days') }}</p>
+            </v-col>
+          </v-row>
+        </template>
+      </v-data-table>
+    </v-card>
+  </v-container>
 </template>
 <script>
 import captcha from '@component/captcha';
@@ -452,6 +466,19 @@ export default {
         value: this.value,
       };
     },
+    getBreadcrumbItems: function() {
+      return [
+        {
+          text: ci18n('The home button in the navigation bar of user dashboard','Home'),
+          to: '/user/homepage',
+        },
+        {
+          text: i18n('Search Logistics Channel'),
+          disabled: true,
+          to: '/logistics/logistics-products/advisor-tool',
+        }
+      ];
+    },
     searchWospService() {
       this.$refs.form.validate();
       if (!this.valid) {
@@ -641,5 +668,40 @@ export default {
       min-height: 36px !important;
     }
   }
+}
+.page-content-layout {
+  padding: 24px 32px;
+  background-color: #f7f9fa;
+}
+.vertical-line {
+  height: 24px;
+  width: 1px;
+  border: 1px solid #bfcdd4;
+  border-radius: 0px;
+}
+.breadcrumb-cell-td {
+  padding-left: 6px;
+  padding-right: 6px;
+  text-align: center;
+  vertical-align: middle;
+}
+.breadcrumb-title-td {
+  padding-left: 0;
+  padding-right: 6px;
+  text-align: center;
+  vertical-align: middle;
+}
+.page-component-first-block {
+  padding: 0 0 8px;
+}
+.page-component-block {
+  padding: 8px 0;
+}
+.breadcrumb-title {
+  font-style: normal;
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 32px;
+  color: #0e161c;
 }
 </style>
