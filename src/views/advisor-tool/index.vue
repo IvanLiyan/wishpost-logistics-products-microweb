@@ -28,6 +28,7 @@
               class="mr"
               :filterable="true"
               v-model="selected_country"
+              placeholder=""
               :label="ci18n('Filter Logistics Channel by field', 'Destination')"
             >
               <wt-option v-for="item in countries" :key="item.text" :value="item.val" :label="item.text" />
@@ -218,14 +219,7 @@
               <v-chip v-else class="ma-2" color="#FFE6EA" text-color="#A61C32" style="bottom: 10px" small>
                 {{ i18n('Tracking not provided') }}
               </v-chip>
-              <v-chip
-                v-if="item.is_limited"
-                class="ma-2"
-                color="#EF8D2E"
-                text-color="white"
-                style="bottom: 10px"
-                small
-              >
+              <v-chip v-if="item.is_limited" class="ma-2" color="#EF8D2E" text-color="white" style="bottom: 10px" small>
                 {{ ci18n('has volume limits', 'Limited') }}
               </v-chip>
             </v-row>
@@ -466,17 +460,17 @@ export default {
         value: this.value,
       };
     },
-    getBreadcrumbItems: function() {
+    getBreadcrumbItems: function () {
       return [
         {
-          text: ci18n('The home button in the navigation bar of user dashboard','Home'),
+          text: ci18n('The home button in the navigation bar of user dashboard', 'Home'),
           to: '/user/homepage',
         },
         {
           text: i18n('Search Logistics Channel'),
           disabled: true,
           to: '/logistics/logistics-products/advisor-tool',
-        }
+        },
       ];
     },
     searchWospService() {
