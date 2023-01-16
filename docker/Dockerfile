@@ -6,7 +6,7 @@ COPY . ./
 RUN npm install
 RUN npm run prod
 
-FROM nginx:1.19.4
+FROM harbor.infra.wish-cn.com/upstream/nginx:1.22-alpine
 COPY --from=build /tmp/dist /home/nginx/static/dist
 # new
 COPY ./docker/static.conf /etc/nginx/conf.d/static.conf
