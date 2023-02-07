@@ -11,7 +11,6 @@
   "dependencies": {
     "@ContextLogic/wt-vue": "^0.0.2-alpha.53",
     "@mdi/font": "^4.5.95",
-    "@mdi/js": "^4.5.95",
     "@wish/fe-utils": "^0.0.1-master-2023-01-12-21c8a39c",
     "axios": "^0.27.2",
     "exceljs": "^3.8.0",
