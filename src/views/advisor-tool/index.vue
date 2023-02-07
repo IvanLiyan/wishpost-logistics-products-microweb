@@ -47,7 +47,7 @@
               />
             </wt-select>
             <wt-select class="mr" v-model="selected_sensitivity_type" :label="i18n('Product Type')">
-              <wt-option v-for="item in sensitivityTypes" :key="item.text" :value="item.val" :label="item.text" />
+              <wt-option v-for="item in getProductType()" :key="item.text" :value="item.val" :label="item.text" />
             </wt-select>
           </div>
           <div class="search-row">
@@ -119,7 +119,7 @@
               v-model="selected_register"
               :label="ci18n('Search Logistics Channel: Tracking Option (provided or not provided)', 'Tracking')"
             >
-              <wt-option v-for="item in register_policy" :key="item.text" :value="item.val" :label="item.text" />
+              <wt-option v-for="item in getRegisterPolicy()" :key="item.text" :value="item.val" :label="item.text" />
             </wt-select>
             <wt-select
               class="mr"
@@ -127,7 +127,7 @@
               v-model="selected_limit"
               :label="ci18n('Search Logistics Channel: Volume Option (limited or unlimited)', 'Volume')"
             >
-              <wt-option v-for="item in limit_policy" :key="item.text" :value="item.val" :label="item.text" />
+              <wt-option v-for="item in getLimitPolicy()" :key="item.text" :value="item.val" :label="item.text" />
             </wt-select>
             <wt-input class="mr" v-model="search_keyword" :label="i18n('Search')" :placeholder="i18n('Search')">
               <wt-icon name="search" slot="suffix" />
@@ -171,7 +171,7 @@
         </div>
       </v-card-title>
       <v-data-table
-        :headers="headers"
+        :headers="getTableHeaders()"
         :items="filteredChannels"
         :loading="searching"
         :loading-text="i18n('Loading... Please wait')"
@@ -231,7 +231,7 @@
                     color: colors[item.refund_rate_in_90_rank - 1],
                   }"
                 >
-                  {{ label[item.refund_rate_in_90_rank - 1] }}
+                  {{ getRefundRankLabel()[item.refund_rate_in_90_rank - 1] }}
                 </b>
               </span>
             </v-row>
@@ -290,35 +290,12 @@ export default {
       delivery_ttd_sort: false,
       fee_sort: false,
       colors: ['#018f12', '#fcd303', '#ff7300', '#ff0000', '#8f0101'],
-      label: [
-        ci18n('refund rate', 'Low'),
-        ci18n('refund rate', 'Medium low'),
-        ci18n('refund rate', 'Medium'),
-        ci18n('refund rate', 'Medium High'),
-        ci18n('refund rate', 'High'),
-      ],
       search_keyword: '',
       countries: [],
       eu_countries: [],
-      enabled_departure_countries: [{ text: this.i18n('All'), val: null }],
+      enabled_departure_countries: [],
       enabled_departure_countries_iso3: [],
-      sensitivityTypes: [
-        // {text: i18n("全选"), val: -1},
-        { text: i18n('General product'), val: 0 },
-        { text: i18n('Special product'), val: 1 },
-        { text: i18n('Sensitive product'), val: 2 },
-      ],
       carriers: [],
-      register_policy: [
-        { text: ci18n('default selection', 'All'), val: null },
-        { text: ci18n('is tracking provided', 'Provided'), val: true },
-        { text: ci18n('is tracking provided', 'Not provided'), val: false },
-      ],
-      limit_policy: [
-        { text: ci18n('default selection', 'All'), val: null },
-        { text: ci18n('has volume limits', 'Limited'), val: true },
-        { text: ci18n('has volume limits', 'Unlimited'), val: false },
-      ],
       user: null,
       selected_sensitivity_type: null,
       selected_country: null,
@@ -330,13 +307,6 @@ export default {
       value: 1.0,
       items_per_page: 20,
       channels: [],
-      headers: [
-        { text: i18n('Channel Name'), value: 'local_name' },
-        { text: i18n('Estimated Shipping Fee'), value: 'fee' },
-        { text: i18n('API Order Code'), value: 'api_code' },
-        { text: i18n('Average Shipping Time of Delivered Orders'), value: 'delivery_ttd' },
-        { text: i18n('Delivery Rate'), value: 'delivered_in_15_rate' },
-      ],
       weight_rules: [
         v => {
           if (!v) {
@@ -414,7 +384,7 @@ export default {
     async init() {
       this.carriers = [];
       this.countries = [];
-      this.enabled_departure_countries = [];
+      this.enabled_departure_countries = [{ text: this.i18n('All'), val: null }];
       this.user = this.$store.state.user;
       if (this.user.is_user && this.user.departure_country) {
         this.departure_country = this.user.departure_country;
@@ -450,6 +420,46 @@ export default {
           message: err.msg,
         });
       }
+    },
+    getTableHeaders() {
+      return [
+        { text: i18n('Channel Name'), value: 'local_name' },
+        { text: i18n('Estimated Shipping Fee'), value: 'fee' },
+        { text: i18n('API Order Code'), value: 'api_code' },
+        { text: i18n('Average Shipping Time of Delivered Orders'), value: 'delivery_ttd' },
+        { text: i18n('Delivery Rate'), value: 'delivered_in_15_rate' },
+      ];
+    },
+    getRefundRankLabel() {
+      return [
+        ci18n('refund rate', 'Low'),
+        ci18n('refund rate', 'Medium low'),
+        ci18n('refund rate', 'Medium'),
+        ci18n('refund rate', 'Medium High'),
+        ci18n('refund rate', 'High'),
+      ];
+    },
+    getProductType() {
+      return [
+        // {text: i18n("全选"), val: -1},
+        { text: i18n('General product'), val: 0 },
+        { text: i18n('Special product'), val: 1 },
+        { text: i18n('Sensitive product'), val: 2 },
+      ];
+    },
+    getRegisterPolicy() {
+      return [
+        { text: ci18n('default selection', 'All'), val: null },
+        { text: ci18n('is tracking provided', 'Provided'), val: true },
+        { text: ci18n('is tracking provided', 'Not provided'), val: false },
+      ];
+    },
+    getLimitPolicy() {
+      return [
+        { text: ci18n('default selection', 'All'), val: null },
+        { text: ci18n('has volume limits', 'Limited'), val: true },
+        { text: ci18n('has volume limits', 'Unlimited'), val: false },
+      ];
     },
     getParams() {
       return {
