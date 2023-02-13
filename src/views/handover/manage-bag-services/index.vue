@@ -15,7 +15,7 @@
               :emptyText="i18n('No data available')"
               :loading="searchingBagServices"
               :loadingMessage="i18n('Loading...')"
-              :pagination="bag_services.length > 0 ? bagServicesPagination : false"
+              :auto-paging="true"
             >
               <wt-table-column prop="bag_type" :label="i18n('大包类型编号')" />
               <wt-table-column prop="service_name" :label="i18n('英文名称')" />
@@ -121,24 +121,11 @@ export default {
     this.getBagServices();
   },
   methods: {
-    onBagServicesPageChange(current, size) {
-      if (this.allBagServices.length > 0) {
-        this.bagServicesPagination.total = this.allBagServices.length;
-        const offset = (current - 1) * size;
-        this.bag_services =
-          offset + size >= this.allBagServices.length
-            ? this.allBagServices.slice(offset, this.allBagServices.length)
-            : this.allBagServices.slice(offset, offset + size);
-      } else {
-        this.bag_services = this.allBagServices;
-      }
-    },
     async getBagServices() {
       try {
         this.searchingBagServices = true;
         const { data } = await req(URL.getPackingBagServices, {});
-        this.allBagServices = data.results;
-        this.onBagServicesPageChange(1, 10);
+        this.bag_services = data.results;
         this.searchingBagServices = false;
       } catch (err) {
         this.$wt.notify({

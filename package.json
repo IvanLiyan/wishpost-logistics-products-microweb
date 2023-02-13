@@ -9,7 +9,7 @@
     "lint": "eslint --ext .vue,.js src --fix"
   },
   "dependencies": {
-    "@ContextLogic/wt-vue": "^0.0.2-alpha.53",
+    "@ContextLogic/wt-vue": "^0.0.2-alpha.64",
     "@mdi/font": "^4.5.95",
     "@wish/fe-utils": "^0.0.1-master-2023-01-12-21c8a39c",
     "axios": "^0.27.2",
