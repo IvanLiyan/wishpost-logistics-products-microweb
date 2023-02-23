@@ -151,7 +151,7 @@
               :emptyText="i18n('No data available')"
               :loading="searchingBags"
               :loadingMessage="i18n('Loading...')"
-              :pagination="bags.length > 0 ? bagsPagination : false"
+              :auto-paging="true"
             >
               <wt-table-column prop="bag_number" :label="i18n('大包号')" />
               <wt-table-column prop="state_name" :label="i18n('大包状态')" />
@@ -423,13 +423,6 @@ export default {
         currentPage: this.deliveryNoteCurrentPage,
         onChange: this.onDeliveryNotePageChange,
       },
-      bagsPagination: {
-        total: 0,
-        showTotal: true,
-        showSizeChanger: true,
-        currentPage: this.bagsCurrentPage,
-        onChange: this.onBagsPageChange,
-      },
     };
   },
   computed: {
@@ -511,18 +504,6 @@ export default {
           to: 'logistics/logistics-products/handover/search-handover',
         },
       ];
-    },
-    onBagsPageChange(current, size) {
-      if (this.allBags.length > 0) {
-        this.bagsPagination.total = this.allBags.length;
-        const offset = (current - 1) * size;
-        this.bags =
-          offset + size >= this.allBags.length
-            ? this.allBags.slice(offset, this.allBags.length)
-            : this.allBags.slice(offset, offset + size);
-      } else {
-        this.bags = this.allBags;
-      }
     },
     onDeliveryNotePageChange(current, size) {
       if (this.allDeliveryNotes.length > 0) {
@@ -641,8 +622,7 @@ export default {
       this.selected_bags = [];
       try {
         const { data } = await req(URL.getPackingBagSearch, params);
-        this.allBags = data.results.rows;
-        this.onBagsPageChange(1, 10);
+        this.bags = data.results.rows;
         this.searchingBags = false;
       } catch (err) {
         this.searchingBags = false;
