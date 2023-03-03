@@ -454,6 +454,7 @@ export default {
           ref_bag_number: item.ref_bag_number,
           handover_serial_number: item.handover_serial_number,
           declared_weight: item.declared_weight,
+          actual_weight: item.actual_weight,
           upstream_name: item.upstream_name,
           downstream_name: item.downstream_name,
           created_time: item.created_time,
