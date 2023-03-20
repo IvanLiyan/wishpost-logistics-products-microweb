@@ -28,11 +28,10 @@
     "vuetify-confirm": "2.0.2"
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.16.8",
     "@babel/preset-react": "^7.16.7",
     "babel-plugin-transform-react-jsx": "^6.24.1",
-    "@vue/cli-plugin-babel": "3.6.0",
     "@vue/cli-plugin-eslint": "~4.5.0",
+    "@vue/cli-plugin-babel": "3.6.0",
     "@vue/cli-service": "^4.1.0",
     "@vue/eslint-config-prettier": "^6.0.0",
     "babel-eslint": "^10.1.0",
