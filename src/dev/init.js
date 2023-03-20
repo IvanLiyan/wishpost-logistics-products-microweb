@@ -1,5 +1,6 @@
 export default () => {
   const Vue = global.Vue;
+  const { VuePlugin } = require('vuera');
   const moduleStore = require('@/store/index').default;
   const Vuex = require('vuex').default;
   Vue.use(Vuex);
@@ -86,6 +87,8 @@ export default () => {
   Vue.use(require('vue-moment'));
   const WT = require('@ContextLogic/wt-vue').default;
   Vue.use(WT);
+  // use react component in Vue
+  Vue.use(VuePlugin);
   Vue.mixin({
     mounted() {
       window.addEventListener('changeLocale', this.onChangeLocale);

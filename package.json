@@ -9,9 +9,12 @@
     "lint": "eslint --ext .vue,.js src --fix"
   },
   "dependencies": {
+    "react": "17.0.0",
+    "react-dom": "17.0.0",
     "@ContextLogic/wt-vue": "^0.0.2-alpha.64",
     "@mdi/font": "^4.5.95",
     "@wish/fe-utils": "^0.0.1-master-2023-01-12-21c8a39c",
+    "antd": "^5.3.1",
     "axios": "^0.27.2",
     "exceljs": "^3.8.0",
     "jquery": "^3.6.0",
@@ -20,14 +23,20 @@
     "vue": "2.6.13",
     "vue-moment": "^4.0.0",
     "vue-router": "3.5.1",
+    "vuera": "^0.2.7",
     "vuetify": "2.3.10",
     "vuetify-confirm": "2.0.2"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.16.8",
+    "@babel/preset-react": "^7.16.7",
+    "babel-plugin-transform-react-jsx": "^6.24.1",
+    "@vue/cli-plugin-babel": "3.6.0",
     "@vue/cli-plugin-eslint": "~4.5.0",
     "@vue/cli-service": "^4.1.0",
     "@vue/eslint-config-prettier": "^6.0.0",
     "babel-eslint": "^10.1.0",
+    "babel-loader": "8.0.6",
     "eslint": "^6.7.2",
     "eslint-plugin-prettier": "^3.3.1",
     "eslint-plugin-vue": "^6.2.2",
