@@ -1,18 +1,19 @@
 /* routes-list */
+import helloReactView from '@views/demo/helloReact.jsx';
+import reactInVueView from '@views/demo/reactInVue';
+import { ReactInVue } from 'vuera';
 const APP_NAME = process.env.VUE_APP_NAME;
+const HelloReactView = ReactInVue(helloReactView);
 export default [
   {
-    path: `${APP_NAME}`,
-    redirect: `${APP_NAME}/demo`,
+    path: `${APP_NAME}/hello-react`,
+    name: `${APP_NAME}.hello-react`,
+    component: HelloReactView,
   },
   {
-    path: `${APP_NAME}/demo`,
-    name: `${APP_NAME}.demo`,
-    component: () =>
-      import(
-        /* webpackChunkName: "change-phone" */
-        '@views/demo/index'
-      ),
+    path: `${APP_NAME}/reactInVue`,
+    name: `${APP_NAME}.reactInVue`,
+    component: reactInVueView,
   },
   {
     path: `${APP_NAME}/advisor-tool`,

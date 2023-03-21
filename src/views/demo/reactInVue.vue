@@ -1,23 +1,19 @@
 <template>
   <div>
-    <wt-card title="Demo page title" subtitle="demo page subtitle">Demo page content</wt-card>
-    <wt-button @click="openDefaultConfirm">默认样式</wt-button>
+    <r-button type="primary">antd react 按钮组件</r-button>
+    <r-hello-react name="xiaohua"></r-hello-react>
   </div>
 </template>
 <script>
+import { Button } from 'antd';
 import commonUrl from '@common/url';
 import req from '@utils/request';
+import HelloReact from './helloReact.jsx';
 import URL from './url';
 export default {
   name: 'demo',
   username: 'xiaohua',
-  components: {},
-  data: () => ({
-    loading: false,
-    pageData: {},
-    msg: '这是VNode节点这是VNode节点这是VNode节点,这是VNode节点这是VNode节点.',
-  }),
-  computed: {},
+  components: { 'r-button': Button, 'r-hello-react': HelloReact },
   created: function () {
     this.getInitData();
   },
@@ -51,20 +47,6 @@ export default {
           message: err.message,
         });
       }
-    },
-    openDefaultConfirm() {
-      this.$wt
-        .confirm({
-          title: '确认提交审核？',
-          message: `<div>${this.msg}</div>`,
-          useHTMLString: true,
-          width: '430px',
-          okButtonText: '确定',
-          showCancelButton: true,
-        })
-        .catch(err => {
-          console.log(err);
-        });
     },
   },
 };
