@@ -1,5 +1,5 @@
 # build environment
-FROM  harbor.infra.wish-cn.com/wish/base-image/node-wnpm:latest as build
+FROM  harbor.infra.wish-cn.com/base/node-wnpm:latest as build
 WORKDIR /tmp
 # ENV PATH /app/node_modules/.bin:$PATH
 COPY . ./
