@@ -1,7 +1,7 @@
 import { i18nModule } from '@wish/fe-utils';
+import viTranslations from '../translation_packages/js/vi_VN.jed.json';
+import zhTranslations from '../translation_packages/js/zh_CN.jed.json';
 import routes from './routes';
-import viTranslations from '/translation_packages/js/vi_VN.jed.json';
-import zhTranslations from '/translation_packages/js/zh_CN.jed.json';
 // config locale transition content
 const LocaleTranslations = {
   en: {},

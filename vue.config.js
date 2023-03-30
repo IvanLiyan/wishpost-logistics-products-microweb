@@ -90,6 +90,10 @@ module.exports = {
         i18nModule: path.resolve(__dirname, 'node_modules/@wish/fe-utils/util/i18n.js'),
       },
     },
+    externals: {
+      react: 'React',
+      'react-dom': 'ReactDOM',
+    },
   },
   devServer: {
     disableHostCheck: true,
