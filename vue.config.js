@@ -8,9 +8,10 @@ log('APP_NAME: ', APP_NAME);
 log('NODE_ENV: ', NODE_ENV);
 const publicPathDev = `/m/static/${PARENT_Name}/${APP_NAME}/`;
 // const publicPathProd = `https://cdn-qa.infra.wish-cn.com/m/static/${PARENT_Name}/${APP_NAME}/`;
-const publicPathProd = `https://cdn.wishpost.cn/cdn-release/qa/wishpost-microweb/logistics-products-cdn/static/`;
+const publicPathTest = `https://cdn.wishpost.cn/cdn-release/qa/wishpost-microweb/logistics-products-cdn/static/`;
+const publicPathProd = `https://cdn.wishpost.cn/cdn-release/prod/wishpost-microweb/logistics-products-cdn/static/`;
 module.exports = {
-  publicPath: NODE_ENV === 'production' ? publicPathProd : publicPathDev,
+  publicPath: NODE_ENV === 'production' ? publicPathProd : NODE_ENV === 'test' ? publicPathTest : publicPathDev,
   // publicPath: publicPathProd,
   css: {
     extract: false,
