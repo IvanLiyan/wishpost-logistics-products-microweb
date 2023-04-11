@@ -9,8 +9,8 @@ log('NODE_ENV: ', NODE_ENV);
 const publicPathDev = `/m/static/${PARENT_Name}/${APP_NAME}/`;
 const publicPathProd = `https://cdn-qa.infra.wish-cn.com/m/static/${PARENT_Name}/${APP_NAME}/`;
 module.exports = {
-  publicPath: NODE_ENV === 'production' ? publicPathProd : publicPathDev,
-  // publicPath: publicPathDev,
+  // publicPath: NODE_ENV === 'production' ? publicPathProd : publicPathDev,
+  publicPath: publicPathDev,
   css: {
     extract: false,
   },
