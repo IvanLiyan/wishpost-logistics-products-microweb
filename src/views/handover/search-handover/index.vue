@@ -179,6 +179,9 @@
                   <wt-button style="margin: 10px" @click="showOrdersDetail(scope.row)">
                     {{ i18n('订单详情') }}
                   </wt-button>
+                  <wt-button @click="notifyDownstreamBagStatus(scope.row)">
+                    {{ i18n('通知下游状态') }}
+                  </wt-button>
                   <wt-button
                     type="secondary"
                     style="margin: 10px"
@@ -295,6 +298,9 @@
                 <template slot-scope="scope">
                   <wt-button style="margin: 10px" @click="showBagsDetail(scope.row)">
                     {{ i18n('大包详情') }}
+                  </wt-button>
+                  <wt-button @click="notifyDownstreamDeliveryNoteStatus(scope.row)">
+                    {{ i18n('通知下游状态') }}
                   </wt-button>
                   <wt-button
                     type="secondary"
@@ -450,6 +456,7 @@ export default {
       if (this.bags.length > 0) {
         const data = this.bags.map(item => ({
           bag_number: item.bag_number,
+          state_code: item.state_code,
           state_name: item.state_name,
           ref_bag_number: item.ref_bag_number,
           handover_serial_number: item.handover_serial_number,
@@ -473,6 +480,7 @@ export default {
         const data = this.delivery_notes.map(item => ({
           delivery_note_number: item.delivery_note_number,
           state: item.state,
+          state_code: item.state_code,
           upstream_name: item.upstream_name,
           downstream_name: item.downstream_name,
           bag_count: item.bag_count,
@@ -596,6 +604,44 @@ export default {
     showOrdersDetail: function (item) {
       this.show_orders_detail_dialog = true;
       this.selected_bag = item;
+    },
+    async notifyDownstreamBagStatus(item) {
+      const params = {
+        bag_number: item.bag_number,
+        bag_state: item.state_code,
+      };
+      try {
+        await req(URL.notifyDownstreamBagStatus, params);
+        this.$wt.notify({
+          type: 'success',
+          message: i18n('已推送大包状态到下游用户'),
+        });
+      } catch (err) {
+        this.searchingBags = false;
+        this.$wt.notify({
+          type: 'error',
+          message: err.msg,
+        });
+      }
+    },
+    async notifyDownstreamDeliveryNoteStatus(item) {
+      const params = {
+        delivery_note_number: item.delivery_note_number,
+        delivery_note_state: item.state_code,
+      };
+      try {
+        await req(URL.notifyDownstreamBagStatus, params);
+        this.$wt.notify({
+          type: 'success',
+          message: i18n('已推送交接单状态到下游用户'),
+        });
+      } catch (err) {
+        this.searchingBags = false;
+        this.$wt.notify({
+          type: 'error',
+          message: err.msg,
+        });
+      }
     },
     showBagsDetail: function (item) {
       this.show_bags_detail_dialog = true;

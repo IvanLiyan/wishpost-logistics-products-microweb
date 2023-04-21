@@ -3,6 +3,7 @@ export default {
   getBagTypeSearchParams: '/api/bag_handover/search_bag/bag-type-params',
   getPackingBagSearch: '/api/bag_handover/search_bag/query-bags',
   getDeliveryNoteSearch: '/api/bag_handover/search_delivery_note/query-delivery-notes',
+  notifyDownstreamBagStatus: '/api/notify_downstream_bag_status',
   getTempAccessToken: '/api/oauth/temp-access-token',
   getPackingBagServices: '/api/admin-bag-service/get',
   deletePackingBagService: '/api/admin-bag-service/delete',
