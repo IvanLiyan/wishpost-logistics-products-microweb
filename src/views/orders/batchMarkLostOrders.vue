@@ -20,7 +20,6 @@
               >
                 <wt-option v-for="item in categories" :key="item.value" :value="item.value" :label="item.text" />
               </wt-select>
-              <wt-input v-model="ticket" :label="i18n('Ticket号')"></wt-input>
             </div>
             <div class="search-row mb">
               <wt-input
@@ -85,6 +84,7 @@
         </v-card>
       </v-container>
       <wt-dialog v-model="mark_lost" :title="i18n('选择订单类型')">
+        <wt-input class="mb" v-model="ticket" :label="i18n('Ticket号')"></wt-input>
         <wt-select class="mb" v-model="lost_type" :label="i18n('类型')">
           <wt-option v-for="item in type_items" :key="item.value" :value="item.value" :label="item.text" />
         </wt-select>
@@ -94,36 +94,18 @@
         </div>
       </wt-dialog>
       <wt-dialog v-model="cancel_order" :title="i18n('选择取消原因')">
-        <wt-select
-          @change="updateCancelOrderCategory"
-          class="mb"
-          v-model="cancel_reason_obj.category"
-          :label="i18n('取消类别')"
-        >
-          <wt-option v-for="item in cancel_category_list" :key="item.id" :value="item.id" :label="item.name" />
-        </wt-select>
-        <wt-select
-          v-if="cancel_reason_obj.category != cancel_category_customized_id"
-          class="mb"
-          v-model="cancel_reason_obj.reason"
-          valueKey="code"
-          :label="i18n('具体原因')"
-        >
+        <wt-input class="mb" v-model="ticket" :label="i18n('Ticket号')"></wt-input>
+        <wt-select class="mb" v-model="cancel_reason_obj.reason" valueKey="code" :label="i18n('取消原因')">
           <wt-option v-for="item in cancel_reason_list" :key="item.code" :value="item" :label="item.name" />
         </wt-select>
-        <wt-input
-          type="textarea"
-          :label="i18n('取消原因')"
-          :placeholder="i18n('必填，不超过200个字符')"
-          v-else-if="cancel_reason_obj.category == cancel_category_customized_id"
-          v-model="cancel_reason_obj.customized_reason"
-        ></wt-input>
+        <wt-input type="textarea" :label="i18n('描述')" v-model="cancel_reason_obj.customized_reason"></wt-input>
         <div slot="footer">
           <wt-button type="primary" @click="batchCancelOrders">{{ i18n('确定') }}</wt-button>
           <wt-button type="secondary" @click="cancel_order = false">{{ i18n('取消') }}</wt-button>
         </div>
       </wt-dialog>
       <wt-dialog v-model="batch_mark_lost" :title="i18n('选择订单类型')">
+        <wt-input class="mb" v-model="ticket" :label="i18n('Ticket号')"></wt-input>
         <wt-select class="mb" v-model="lost_type" :label="i18n('类型')">
           <wt-option v-for="item in type_items" :key="item.value" :value="item.value" :label="item.text" />
         </wt-select>
@@ -133,31 +115,11 @@
         </div>
       </wt-dialog>
       <wt-dialog v-model="batch_cancel_order" :title="i18n('选择取消原因')">
-        <wt-select
-          class="mb"
-          @change="updateCancelOrderCategory"
-          v-model="cancel_reason_obj.category"
-          :label="i18n('取消类别')"
-        >
-          <wt-option v-for="item in cancel_category_list" :key="item.id" :value="item.id" :label="item.name" />
-        </wt-select>
-        <wt-select
-          v-if="cancel_reason_obj.category != cancel_category_customized_id"
-          class="mb"
-          v-model="cancel_reason_obj.reason"
-          valueKey="code"
-          :label="i18n('具体原因')"
-          @change="show"
-        >
+        <wt-input class="mb" v-model="ticket" :label="i18n('Ticket号')"></wt-input>
+        <wt-select class="mb" v-model="cancel_reason_obj.reason" valueKey="code" :label="i18n('取消原因')">
           <wt-option v-for="item in cancel_reason_list" :key="item.code" :value="item" :label="item.name" />
         </wt-select>
-        <wt-input
-          type="textarea"
-          :label="i18n('取消原因')"
-          :placeholder="i18n('必填，不超过200个字符')"
-          v-else-if="cancel_reason_obj.category == cancel_category_customized_id"
-          v-model="cancel_reason_obj.customized_reason"
-        ></wt-input>
+        <wt-input type="textarea" :label="i18n('描述')" v-model="cancel_reason_obj.customized_reason"></wt-input>
         <div slot="footer">
           <wt-button type="primary" @click="upload_batch_cancel_order = true">{{ i18n('上传') }}</wt-button>
           <wt-button type="secondary" @click="batch_cancel_order = false">{{ i18n('取消') }}</wt-button>
@@ -191,7 +153,7 @@
           <excelFileReader v-model="batch_upload.data"></excelFileReader>
         </div>
         <div slot="footer">
-          <wt-button type="primary" @click="batchUploadCancelORder">{{ i18n('确定') }}</wt-button>
+          <wt-button type="primary" @click="batchUploadCancelOrder">{{ i18n('确定') }}</wt-button>
           <wt-button type="secondary" @click="[(upload_batch_cancel_order = false), (batch_cancel_order = false)]">
             {{ i18n('取消') }}
           </wt-button>
@@ -227,13 +189,11 @@ export default {
         { text: '4PL前程件', value: 'fm' },
         { text: '4PL后程件', value: 'lm' },
       ],
-      cancel_category_list: [],
       cancel_reason_list: [],
-      cancel_category_customized_id: -9999999,
+      cancel_customized_id: 69999,
       items_per_page: 20,
       cancel_reason_obj: {
         order_id: '',
-        category: null,
         reason: {},
         customized_reason: null,
       },
@@ -275,16 +235,12 @@ export default {
   methods: {
     async initParams() {
       try {
-        const { data } = await req(URL.getCancelOrderReasonCategoryList);
-        this.cancel_category_list.push({
+        const { data } = await req(URL.getAdminCancelOrderReasonList);
+        this.cancel_reason_list.push({
           id: null,
           name: this.i18n('请选择'),
         });
-        this.cancel_category_list = this.cancel_category_list.concat(data);
-        this.cancel_category_list.push({
-          id: this.cancel_category_customized_id,
-          name: this.i18n('以上都不是'),
-        });
+        this.cancel_reason_list = this.cancel_reason_list.concat(data);
       } catch (err) {
         this.$wt.notify({
           type: 'error',
@@ -317,12 +273,6 @@ export default {
           message: err.message,
         });
       }
-    },
-    updateCancelOrderCategory() {
-      this.cancel_reason_obj.reason = null;
-      this.cancel_reason_list = this.cancel_category_list.find(
-        entry => entry.id == this.cancel_reason_obj.category,
-      ).reasons;
     },
     markLost() {
       this.mark_lost = true;
@@ -357,7 +307,7 @@ export default {
         this.batch_mark_lost = false;
       }
     },
-    async batchUploadCancelORder() {
+    async batchUploadCancelOrder() {
       this.batch_upload.error = '';
       this.batch_upload.msg = '';
       this.batch_upload.loading = true;
@@ -365,10 +315,8 @@ export default {
       this.batch_upload.data[0].data.forEach(entry => tracking_ids.push(entry.tracking_id));
       const customized_reason = this.cancel_reason_obj.customized_reason;
       if (
-        !this.cancel_reason_obj.category ||
-        (this.cancel_reason_obj.category != this.cancel_category_customized_id && !this.cancel_reason_obj.reason) ||
-        (this.cancel_reason_obj.category == this.cancel_category_customized_id &&
-          !this.cancel_reason_obj.customized_reason)
+        !this.cancel_reason_obj.reason ||
+        (this.cancel_reason_obj.reason.code === this.cancel_customized_id && !this.cancel_reason_obj.customized_reason)
       ) {
         this.$wt.notify({
           type: 'error',
@@ -464,14 +412,19 @@ export default {
       const trackings = this.tracking_ids.split(/\s+/);
       const customized_reason = this.cancel_reason_obj.customized_reason;
       if (
-        !this.cancel_reason_obj.category ||
-        (this.cancel_reason_obj.category != this.cancel_category_customized_id && !this.cancel_reason_obj.reason) ||
-        (this.cancel_reason_obj.category == this.cancel_category_customized_id &&
-          !this.cancel_reason_obj.customized_reason)
+        !this.cancel_reason_obj.reason ||
+        (this.cancel_reason_obj.reason.code === this.cancel_customized_id && !this.cancel_reason_obj.customized_reason)
       ) {
         this.$wt.notify({
           type: 'error',
           message: this.i18n('请选择/填写取消原因'),
+        });
+        return;
+      }
+      if (!this.ticket) {
+        this.$wt.notify({
+          type: 'error',
+          message: this.i18n('请填写ticket号'),
         });
         return;
       }
