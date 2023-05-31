@@ -316,6 +316,7 @@ export default {
       const customized_reason = this.cancel_reason_obj.customized_reason;
       if (
         !this.cancel_reason_obj.reason ||
+        !this.cancel_reason_obj.reason.code ||
         (this.cancel_reason_obj.reason.code === this.cancel_customized_id && !this.cancel_reason_obj.customized_reason)
       ) {
         this.$wt.notify({
@@ -413,6 +414,7 @@ export default {
       const customized_reason = this.cancel_reason_obj.customized_reason;
       if (
         !this.cancel_reason_obj.reason ||
+        !this.cancel_reason_obj.reason.code ||
         (this.cancel_reason_obj.reason.code === this.cancel_customized_id && !this.cancel_reason_obj.customized_reason)
       ) {
         this.$wt.notify({
