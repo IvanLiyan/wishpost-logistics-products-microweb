@@ -1,15 +1,6 @@
 stages:
   - build
 
-include:
-  - project: "contextlogic/includes-cn"
-    file: "/templates/job-docker-build/default.yml"
-
-build_image:
-  extends: .docker-build
-  variables:
-    DOCKERFILE: "docker/Dockerfile"
-
 build-job:
   stage: build
   image: 
