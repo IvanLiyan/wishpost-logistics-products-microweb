@@ -1,9 +1,15 @@
 stages:
+  - pre-commit
+  - upload
   - build
 
 include:
   - project: "contextlogic/includes-cn"
+    file: "templates/job-pre-commit/placeholder.yml"
+  - project: "contextlogic/includes-cn"
+    file: "/templates/job-secrets-gitleaks/default.yml"
+  - project: "contextlogic/includes-cn"
     file: "/templates/job-cdn-upload/default.yml"
-     
+
 build-cdn:
   extends: .cdn-upload
