@@ -3,7 +3,7 @@ stages:
 
 include:
   - project: "contextlogic/includes-cn"
-     file: "/templates/job-cdn-upload/default.yml"
+    file: "/templates/job-cdn-upload/default.yml"
      
 build-cdn:
-   extends: .cdn-upload
+  extends: .cdn-upload
