@@ -1,23 +1,15 @@
 stages:
+  - pre-commit
+  - upload
   - build
 
-build-job:
-  stage: build
-  image: 
-    name: harbor.infra.wish-cn.com/infra/cdn_build:latest
-    entrypoint: [""]
-  script: 
-    - npm install
-    - npm run test
-    - aws s3 cp dist s3://infra-cn-data/gitlab-data/prod/${CI_PROJECT_NAME}/${CI_COMMIT_SHA}/qa --recursive
-    - npm run prod
-    - aws s3 cp dist s3://infra-cn-data/gitlab-data/prod/${CI_PROJECT_NAME}/${CI_COMMIT_SHA}/prod --recursive
+include:
+  - project: "contextlogic/includes-cn"
+    file: "templates/job-pre-commit/placeholder.yml"
+  - project: "contextlogic/includes-cn"
+    file: "/templates/job-secrets-gitleaks/default.yml"
+  - project: "contextlogic/includes-cn"
+    file: "/templates/job-cdn-upload/default.yml"
 
-  tags:
-    - prod
-  rules:
-    - if: $CI_COMMIT_BRANCH == "master" 
-      when: always
-    - if: $CI_COMMIT_BRANCH == "master" && $CI_PIPELINE_SOURCE == "push" || $CI_EXTERNAL_PULL_REQUEST_TARGET_BRANCH_NAME == "master"
-    - if: $MANUAL == "true"
-      when: always
+build-cdn:
+  extends: .cdn-upload
