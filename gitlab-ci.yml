@@ -1,9 +1,15 @@
 stages:
+  - scan
   - pre-commit
   - upload
   - build
 
 include:
+  - project: 'contextlogic/includes-cn' # this is the sonarscan job for scanning itself.
+    ref: master
+    file: "/templates/job-sonar/default.yml"
+    rules:
+      - if: $CI_PIPELINE_SOURCE == "schedule" && $SCHEDULE_TYPE == "daily" && $JOB == "sonarscan"
   - project: "contextlogic/includes-cn"
     file: "templates/job-pre-commit/placeholder.yml"
   - project: "contextlogic/includes-cn"
