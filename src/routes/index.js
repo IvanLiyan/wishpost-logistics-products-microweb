@@ -69,4 +69,13 @@ export default [
         '@views/orders/batchMarkLostOrders'
       ),
   },
+  {
+    path: `${APP_NAME}/restricted-products`,
+    name: `${APP_NAME}.restricted-products`,
+    component: () =>
+      import(
+        /* webpackChunkName: "mark-lost-orders" */
+        '@views/logistics/restrictedProducts'
+      ),
+  },
 ];

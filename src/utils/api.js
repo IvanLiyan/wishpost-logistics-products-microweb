@@ -287,6 +287,18 @@ export default {
   searchOrderRequest: function (params) {
     return this._post('order-request/search', params);
   },
+  getProductMeta: function () {
+    return this._post('restricted-product/get-meta');
+  },
+  searchRestrictedProducts: function (params) {
+    return this._post('restricted-product/get', params);
+  },
+  createRestrictedProduct: function (params) {
+    return this._post('restricted-product/create', params);
+  },
+  deleteRestrictedProduct: function (params) {
+    return this._post('restricted-product/delete', params);
+  },
   exportOrders: function (params) {
     return this._post('export-orders', params);
   },
